@@ -1,31 +1,98 @@
-# Prerequisites
-*.d
+---- CMake ----
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+*.user
+*.sln
+.vcxproj
+*.ninja
+.ninja_deps
+.ninja_log
 
-# Precompiled Headers
-*.gch
+---- Visual Studio ----
+
+*.obj
+*.pdb
+*.idb
+*.ipch
+*.aps
 *.pch
+*.vspscc
+*.vssscc
+*.suo
+*.user
+*.userossc
+*.unsuccessfulbuild
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+.vs/
+CMakeSettings.json
 
-# Compiled Dynamic libraries
+---- Mac / Linux build cruft ----
+
+*.dSYM/
+*.o
+*.lo
+*.la
+*.al
+*.libs
 *.so
 *.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
 *.a
-*.lib
 
-# Executables
+---- Logs and temp files ----
+
+*.log
+*.cache
+*.tmp
+*.bak
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+---- IDE-specific ----
+CLion / JetBrains
+
+.idea/
+cmake-build-*/
+
+VSCode
+
+.vscode/
+*.code-workspace
+
+---- External library builds ----
+If you include external libraries as submodules or local sources
+
+/deps/build/
+/deps/bin/
+/external/build/
+/external/bin/
+
+---- Generated files ----
+
+*.generated.h
+*.generated.cpp
+.gen.
+
+---- Misc ----
+
+*.tlog
+*.lastbuildstate
+*.ilk
+*.manifest
+*.res
+*.rsp
+*.exp
+*.lib
+*.dll
 *.exe
-*.out
-*.app
+
+---- Includes ----
+!resources/models/*.obj
