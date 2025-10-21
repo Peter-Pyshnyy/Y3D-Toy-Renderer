@@ -1,3 +1,14 @@
+---- Build Output ----
+
+/build/
+/bin/
+/out/
+/dist/
+/Debug/
+/Release/
+/x64/
+/x86/
+
 ---- CMake ----
 
 CMakeFiles/
