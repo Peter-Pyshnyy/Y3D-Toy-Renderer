@@ -131,7 +131,7 @@ int main() {
 	std::cout << "Active uniforms: " << count << "\n";
 #pragma endregion
 
-	Model ourModel(std::filesystem::path("../resources/models/backpack.obj").string());
+	Model ourModel((std::filesystem::path(MODEL_DIR) / "backpack/backpack.obj").string());
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		int w = 0, h = 0;
