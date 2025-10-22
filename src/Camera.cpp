@@ -10,6 +10,7 @@ Camera::Camera() :
 	cameraUp(0.0f, 1.0f, 0.0f),
 	moving({ false, false, false, false, false, false }),
 	isAccelerating(false),
+	fov(45.0f),
 	SENSITIVITY(0.00075f),
 	MOVEMENT_SPEED(3.0f),
 	ACCELERATION_SPEED(3.0f)
@@ -56,4 +57,16 @@ glm::vec3 Camera::getPosition() const {
 	return position;
 }
 
-void Camera::zoom() {}
+float Camera::getFov() const {
+	return fov;
+}
+
+void Camera::zoom(float yoffset) {
+	fov -= (float)yoffset;
+	if (fov < 1.0f) {
+		fov = 1.0f;
+	}
+	if (fov > 45.0f) {
+		fov = 45.0f;
+	}
+}

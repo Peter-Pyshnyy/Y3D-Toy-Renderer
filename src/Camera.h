@@ -11,6 +11,7 @@ class Camera
 	glm::vec2 oldMousePosition;
 	std::array<bool, 6> moving; //directional movement-flags
 	bool isAccelerating;
+	float fov;
 	const float SENSITIVITY;
 	const float MOVEMENT_SPEED;
 	const float ACCELERATION_SPEED;
@@ -20,9 +21,10 @@ public:
 	void move(float delta);
 	void setMoving(uint8_t dir, bool state);
 	void setAcceleration(bool state);
-	void zoom();
+	void zoom(float yoffset);
 	glm::mat4 getWorldToViewMatrix() const;
 	glm::vec3 getPosition() const;
+	float getFov() const;
 	enum Direction { FORWARD, BACKWARD, RIGHT, LEFT, UP, DOWN };
 };
 

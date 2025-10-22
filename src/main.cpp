@@ -13,7 +13,6 @@
 
 GLuint numIndices = 0;
 Camera camera;
-float fov = 40.0f;
 float lastFrame = 0.0f;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -74,13 +73,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	fov -= (float)yoffset;
-	if (fov < 1.0f) {
-		fov = 1.0f;
-	}
-	if (fov > 45.0f) {
-		fov = 45.0f;
-	}
+	camera.zoom(yoffset);
 }
 
 int main() {
@@ -148,7 +141,7 @@ int main() {
 
 		glBindVertexArray(vao); //binds the vertex array object
 		shader.bind(); //binds the shader program to the current context
-		glm::mat4 proj = glm::perspective(glm::radians(fov), static_cast<float>(w) / static_cast<float>(h), 0.1f, 100.0f);
+		glm::mat4 proj = glm::perspective(glm::radians(camera.getFov()), static_cast<float>(w) / static_cast<float>(h), 0.1f, 100.0f);
 
 		shader.setFloat("u_time", (float)glfwGetTime());
 		shader.setMat4("u_proj", proj);
