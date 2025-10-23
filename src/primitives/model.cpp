@@ -6,12 +6,22 @@
 #include <assimp/postprocess.h>
 
 //https://learnopengl.com/Model-Loading/Model
-Model::Model(const std::string& path)
+Model::Model(const std::string& path) :
+    light({
+        glm::vec3(0.1f),
+        glm::vec3(0.8f),
+        glm::vec3(1.0f),
+        0.0f
+        })
 {
     loadModel(path);
 }
 
 void Model::Draw(Shader& shader) {
+    shader.setVec3("light.ambient", light.ambient);
+    shader.setVec3("light.diffuse", light.diffuse);
+    shader.setVec3("light.specular", light.specular);
+    shader.setFloat("light.shininess", light.shininess);
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
 }
@@ -93,6 +103,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        material->Get(AI_MATKEY_SHININESS, light.shininess);
     }
 	return Mesh(vertices, indices, textures);
 }
@@ -166,4 +177,17 @@ unsigned int Model::TextureFromFile(const char* path, const std::string& directo
     }
 
     return textureID;
+}
+
+void Model::setLightMultipliers(Light& light) {
+    this->light = light;
+}
+
+void Model::setLightMultipliers(glm::vec3& ambient, glm::vec3& diffuse, glm::vec3& specular, float shininess) {
+    this->light = {
+        ambient,
+        diffuse,
+        specular,
+        shininess
+    };
 }
