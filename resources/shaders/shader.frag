@@ -6,18 +6,45 @@ in vec2 v_texCoords;
 in vec3 v_normal;
 in vec3 v_fragPos;
 
-struct Light {
+#define MAX_POINTLIGTS 16
+#define MAX_SPOTLIGTS 16
+
+
+struct DirLight {    
+    vec3 position;  
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-    float shininess;
 };
+
+struct PointLight {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct SpotLight {   
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    vec3 direction;
+    float cutOff;     
+    float outerCutOff;
+};
+
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
 uniform vec3 u_lightPos;
 uniform vec3 u_viewPos;
-uniform Light light;
+uniform DirLight dirLight; //TODO: maybe change to be the first element in the pointLight array
+uniform PointLight pointLights[MAX_POINTLIGTS];
+uniform SpotLight spotLights[MAX_SPOTLIGTS];
 
 vec3 phong(vec3 normal, vec3 viewDir, vec3 lightDir) {
     vec3 diffuseColor = light.diffuse * pow(texture(texture_diffuse1, v_texCoords).rgb, vec3(2.2)); // linearize color space
