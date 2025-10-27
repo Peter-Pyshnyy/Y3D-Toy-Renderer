@@ -2,6 +2,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "primitives/lightSource.h"
 
 
 struct Shader
@@ -26,9 +27,12 @@ struct Shader
 	void setVec2(const std::string& name, float x, float y) const;
 	void setVec3(const std::string& name, const glm::vec3& value) const;
 	void setVec3(const std::string& name, float x, float y, float z) const;
+	void setiVec3(const std::string& name, const glm::ivec3& value) const;
+	void setiVec3(const std::string& name, int x, int y, int z) const;
 	void setVec4(const std::string& name, const glm::vec4& value) const;
 	void setVec4(const std::string& name, float x, float y, float z, float w);
 	void setMat2(const std::string& name, const glm::mat2& mat) const;
 	void setMat3(const std::string& name, const glm::mat3& mat) const;
 	void setMat4(const std::string& name, const glm::mat4& mat) const;
+	void setLightSource(const LightSource& light) const;
 };

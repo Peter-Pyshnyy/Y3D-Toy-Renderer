@@ -3,11 +3,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
 #include <iostream>
 #include <filesystem>
 #include "openglErrorReporting.h"
 #include "shader.h"
 #include "Camera.h"
+#include "primitives/lightSource.h"
 #include "primitives/model.h"
 #include "paths.h"
 
@@ -115,7 +117,25 @@ int main() {
 	std::filesystem::path fragPath = std::filesystem::path(SHADER_DIR) / "shader.frag";
 	shader.loadShaderProgramFromFile(vertPath.string().c_str(), fragPath.string().c_str());
 	shader.bind(); //binds the shader program to the current context
-	//-----------------------------------
+	
+	//maybe set the lights in a somewhere else and somehow else?
+	std::vector<LightSource> lights(5);
+	lights[0].constructAsDirectionalLight(glm::vec3(1.0, -1.0, 0.0));
+	for (int i = 1; i < 4; i++) {
+		lights[i].constructAsPointLight(1.0f, 0.09f, 0.032f);
+		lights[i].position = glm::vec3((i - 2) * 3.0f, 1.0f, 3.0f);
+	}
+	lights[4].constructAsSpotlight(glm::vec3(0.0f, 0.0f, -1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)), 1.0f, 0.09f, 0.032f);
+
+	for (int i = 0; i < lights.size(); i++) {
+		shader.setLightSource(lights[i]);
+	}
+
+	shader.setiVec3("lightCount", LightSource::getLightCount());
+
+	glm::vec3 test = LightSource::getLightCount();
+
+	//should I remove or move next block?
 	glLinkProgram(shader.id);
 
 	GLint success;

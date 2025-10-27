@@ -209,6 +209,16 @@ void Shader::setVec3(const std::string& name, float x, float y, float z) const
 	glUniform3f(glGetUniformLocation(id, name.c_str()), x, y, z);
 }
 // ------------------------------------------------------------------------
+void Shader::setiVec3(const std::string& name, const glm::ivec3& value) const
+{
+	glUniform3iv(glGetUniformLocation(id, name.c_str()), 1, &value[0]);
+}
+
+void Shader::setiVec3(const std::string& name, int x, int y, int z) const
+{
+	glUniform3i(glGetUniformLocation(id, name.c_str()), x, y, z);
+}
+// ------------------------------------------------------------------------
 void Shader::setVec4(const std::string& name, const glm::vec4& value) const
 {
 	glUniform4fv(glGetUniformLocation(id, name.c_str()), 1, &value[0]);
@@ -231,4 +241,45 @@ void Shader::setMat3(const std::string& name, const glm::mat3& mat) const
 void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+// ------------------------------------------------------------------------
+void Shader::setLightSource(const LightSource& light) const
+{
+	if (!LightSource::incrementLightCount(light.type)) {
+		std::cout << "Maximum number of lights of this type reached.\n";
+		return;
+	}
+
+	switch (light.type) {
+	case LightType::DIRECTIONAL: {
+		setVec3("dirLight.direction", light.direction);
+		setVec3("dirLight.ambient", light.ambient);
+		setVec3("dirLight.diffuse", light.diffuse);
+		setVec3("dirLight.specular", light.specular);
+		break;
+	}
+	case LightType::POINT: {
+		std::string name = "pointLights[" + std::to_string(LightSource::getLightCount()[LightType::POINT]) + "]";
+		setVec3(name + ".position", light.position);
+		setVec3(name + ".ambient", light.ambient);
+		setVec3(name + ".diffuse", light.diffuse);
+		setVec3(name + ".specular", light.specular);
+		setFloat(name + ".constant", light.constant);
+		setFloat(name + ".linear", light.linear);
+		setFloat(name + ".quadratic", light.quadratic);
+		break;
+	}
+	case LightType::SPOT: {
+		std::string name = "spotlights[" + std::to_string(LightSource::getLightCount()[LightType::POINT]) + "]";
+		setVec3(name + ".position", light.position);
+		setVec3(name + ".ambient", light.ambient);
+		setVec3(name + ".diffuse", light.diffuse);
+		setVec3(name + ".specular", light.specular);
+		setVec3(name + ".direction", light.direction);
+		setFloat(name + ".cutOff", light.cutOff);
+		break;
+	}
+	default:
+		break;
+	}
 }
