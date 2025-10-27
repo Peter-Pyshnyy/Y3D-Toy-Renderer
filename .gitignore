@@ -106,4 +106,4 @@ If you include external libraries as submodules or local sources
 *.exe
 
 ---- Includes ----
-!resources/models/*.obj
+!resources/models/**/*.obj
