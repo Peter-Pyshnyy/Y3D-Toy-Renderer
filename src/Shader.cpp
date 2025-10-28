@@ -253,18 +253,18 @@ void Shader::setLightSource(const LightSource& light) const
 	switch (light.type) {
 	case LightType::DIRECTIONAL: {
 		setVec3("dirLight.direction", light.direction);
-		setVec3("dirLight.ambient", light.ambient);
-		setVec3("dirLight.diffuse", light.diffuse);
-		setVec3("dirLight.specular", light.specular);
+		setVec3("dirLight.multipliers.ambient", light.ambient);
+		setVec3("dirLight.multipliers.diffuse", light.diffuse);
+		setVec3("dirLight.multipliers.specular", light.specular);
 		break;
 	}
 	case LightType::POINT: {
 		int i = LightSource::getLightCount()[LightType::POINT] - 1;
 		std::string name = "pointLights[" + std::to_string(i) + "]";
 		setVec3(name + ".position", light.position);
-		setVec3(name + ".ambient", light.ambient);
-		setVec3(name + ".diffuse", light.diffuse);
-		setVec3(name + ".specular", light.specular);
+		setVec3(name + ".multipliers.ambient", light.ambient);
+		setVec3(name + ".multipliers.diffuse", light.diffuse);
+		setVec3(name + ".multipliers.specular", light.specular);
 		setFloat(name + ".constant", light.constant);
 		setFloat(name + ".linear", light.linear);
 		setFloat(name + ".quadratic", light.quadratic);
@@ -274,9 +274,9 @@ void Shader::setLightSource(const LightSource& light) const
 		int i = LightSource::getLightCount()[LightType::SPOT] - 1;
 		std::string name = "spotlights[" + std::to_string(i) + "]";
 		setVec3(name + ".position", light.position);
-		setVec3(name + ".ambient", light.ambient);
-		setVec3(name + ".diffuse", light.diffuse);
-		setVec3(name + ".specular", light.specular);
+		setVec3(name + ".multipliers.ambient", light.ambient);
+		setVec3(name + ".multipliers.diffuse", light.diffuse);
+		setVec3(name + ".multipliers.specular", light.specular);
 		setVec3(name + ".direction", light.direction);
 		setFloat(name + ".cutOff", light.cutOff);
 		setFloat(name + ".outerCutOff", light.outerCutOff);
