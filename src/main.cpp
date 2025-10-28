@@ -116,6 +116,7 @@ int main() {
 	std::filesystem::path vertPath = std::filesystem::path(SHADER_DIR) / "shader.vert";
 	std::filesystem::path fragPath = std::filesystem::path(SHADER_DIR) / "shader.frag";
 	shader.loadShaderProgramFromFile(vertPath.string().c_str(), fragPath.string().c_str());
+	glLinkProgram(shader.id);
 	shader.bind(); //binds the shader program to the current context
 	
 	//maybe set the lights in a somewhere else and somehow else?
@@ -131,13 +132,11 @@ int main() {
 		shader.setLightSource(lights[i]);
 	}
 
-	shader.setiVec3("lightCount", LightSource::getLightCount());
+	shader.setuVec3("lightCount", LightSource::getLightCount());
 
 	glm::vec3 test = LightSource::getLightCount();
 
 	//should I remove or move next block?
-	glLinkProgram(shader.id);
-
 	GLint success;
 	glGetProgramiv(shader.id, GL_LINK_STATUS, &success);
 	if (!success) {

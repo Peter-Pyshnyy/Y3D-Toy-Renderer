@@ -1,6 +1,6 @@
 #include "LightSource.h"
 
-glm::i8vec3 LightSource::lightCount = glm::i8vec3(0);
+glm::uvec3 LightSource::lightCount = glm::i8vec3(0);
 
 LightSource::LightSource(
     glm::vec3 position,
@@ -30,8 +30,6 @@ void LightSource::constructAsDirectionalLight(glm::vec3 direction) {
 	this->quadratic = 0.0f;
 	this->cutOff = 0.0f;
 	this->outerCutOff = 0.0f;
-
-	LightSource::lightCount.x = 1; //only one directional light allowed
 }
 
 void LightSource::constructAsPointLight(float constant, float linear, float quadratic) {
@@ -43,8 +41,6 @@ void LightSource::constructAsPointLight(float constant, float linear, float quad
 	this->direction = glm::vec3(0.0f);
 	this->cutOff = 0.0f;
 	this->outerCutOff = 0.0f;
-
-	
 }
 
 
@@ -83,6 +79,6 @@ bool LightSource::incrementLightCount(LightType type) {
 	}
 }
 
-glm::i8vec3 LightSource::getLightCount() {
+glm::uvec3 LightSource::getLightCount() {
 	return LightSource::lightCount;
 };

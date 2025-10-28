@@ -6,8 +6,8 @@ in vec2 v_texCoords;
 in vec3 v_normal;
 in vec3 v_fragPos;
 
-#define MAX_POINTLIGTS 16
-#define MAX_SPOTLIGTS 8
+#define MAX_POINTLIGHTS 16
+#define MAX_SPOTLIGHTS 8
 
 
 struct DirLight {    
@@ -44,9 +44,9 @@ uniform vec3 u_lightPos;
 uniform vec3 u_viewPos;
 uniform float shininess;
 uniform DirLight dirLight; //TODO: maybe change to be the first element in the pointLight array
-uniform PointLight pointLights[MAX_POINTLIGTS];
-uniform Spotlight spotlights[MAX_SPOTLIGTS];
-uniform ivec3 lightCount;
+uniform PointLight pointLights[MAX_POINTLIGHTS];
+uniform Spotlight spotlights[MAX_SPOTLIGHTS];
+uniform uvec3 lightCount;
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -61,14 +61,14 @@ void main()
 
     //Directional light
     vec3 color = lightCount[0] * calcDirLight(dirLight, normal, viewDir); //messy, change later
-    //Point lights
-    for(int i = 0; i < lightCount[1]; i++) {
-        color += calcPointLight(pointLights[i], normal, fragPos, viewDir);
-    }
-    //Spot lights
-    for(int i = 0; i < lightCount[2]; i++) {
-        color += calcSpotlight(spotlights[i], normal, fragPos, viewDir);
-    }
+//    //Point lights
+//    for(uint i = 0u; i < lightCount[1]; i++) {
+//        color += calcPointLight(pointLights[i], normal, fragPos, viewDir);
+//    }
+//    //Spot lights
+//    for(uint i = 0u; i < lightCount[2]; i++) {
+//        color += calcSpotlight(spotlights[i], normal, fragPos, viewDir);
+//    }
 
     FragColor = vec4(color, 1.0);
 }
@@ -84,7 +84,7 @@ vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     return (ambient + diffuse + specular);
 }
 
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);

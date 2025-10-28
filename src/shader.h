@@ -27,8 +27,8 @@ struct Shader
 	void setVec2(const std::string& name, float x, float y) const;
 	void setVec3(const std::string& name, const glm::vec3& value) const;
 	void setVec3(const std::string& name, float x, float y, float z) const;
-	void setiVec3(const std::string& name, const glm::ivec3& value) const;
-	void setiVec3(const std::string& name, int x, int y, int z) const;
+	void setuVec3(const std::string& name, const glm::uvec3& value) const;
+	void setuVec3(const std::string& name, unsigned int x, unsigned int y, unsigned int z) const;
 	void setVec4(const std::string& name, const glm::vec4& value) const;
 	void setVec4(const std::string& name, float x, float y, float z, float w);
 	void setMat2(const std::string& name, const glm::mat2& mat) const;

@@ -37,8 +37,8 @@ public:
 	void constructAsPointLight(float constant, float linear, float quadratic);
 	void constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic);
 	static bool incrementLightCount(LightType type);
-	static glm::i8vec3 getLightCount();
+	static glm::uvec3 getLightCount();
 
 protected:
-	static glm::i8vec3 lightCount;
+	static glm::uvec3 lightCount;
 };

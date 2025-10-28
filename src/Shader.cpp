@@ -209,12 +209,12 @@ void Shader::setVec3(const std::string& name, float x, float y, float z) const
 	glUniform3f(glGetUniformLocation(id, name.c_str()), x, y, z);
 }
 // ------------------------------------------------------------------------
-void Shader::setiVec3(const std::string& name, const glm::ivec3& value) const
+void Shader::setuVec3(const std::string& name, const glm::uvec3& value) const
 {
-	glUniform3iv(glGetUniformLocation(id, name.c_str()), 1, &value[0]);
+	glUniform3uiv(glGetUniformLocation(id, name.c_str()), 1, &value[0]);
 }
 
-void Shader::setiVec3(const std::string& name, int x, int y, int z) const
+void Shader::setuVec3(const std::string& name, unsigned int x, unsigned int y, unsigned z) const
 {
 	glUniform3i(glGetUniformLocation(id, name.c_str()), x, y, z);
 }
@@ -259,7 +259,8 @@ void Shader::setLightSource(const LightSource& light) const
 		break;
 	}
 	case LightType::POINT: {
-		std::string name = "pointLights[" + std::to_string(LightSource::getLightCount()[LightType::POINT]) + "]";
+		int i = LightSource::getLightCount()[LightType::POINT] - 1;
+		std::string name = "pointLights[" + std::to_string(i) + "]";
 		setVec3(name + ".position", light.position);
 		setVec3(name + ".ambient", light.ambient);
 		setVec3(name + ".diffuse", light.diffuse);
@@ -270,7 +271,8 @@ void Shader::setLightSource(const LightSource& light) const
 		break;
 	}
 	case LightType::SPOT: {
-		std::string name = "spotlights[" + std::to_string(LightSource::getLightCount()[LightType::POINT]) + "]";
+		int i = LightSource::getLightCount()[LightType::SPOT] - 1;
+		std::string name = "spotlights[" + std::to_string(i) + "]";
 		setVec3(name + ".position", light.position);
 		setVec3(name + ".ambient", light.ambient);
 		setVec3(name + ".diffuse", light.diffuse);
