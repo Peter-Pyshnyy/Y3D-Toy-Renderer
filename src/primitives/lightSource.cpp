@@ -1,6 +1,6 @@
 #include "LightSource.h"
 
-glm::uvec3 LightSource::lightCount = glm::i8vec3(0);
+glm::uvec3 LightSource::lightCount = glm::uvec3(0);
 
 LightSource::LightSource(
     glm::vec3 position,
@@ -44,7 +44,7 @@ void LightSource::constructAsPointLight(float constant, float linear, float quad
 }
 
 
-void LightSource::constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic) {
+void LightSource::constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff) {
 	this->type = SPOT;
 	this->direction = direction;
 	this->cutOff = cutOff;

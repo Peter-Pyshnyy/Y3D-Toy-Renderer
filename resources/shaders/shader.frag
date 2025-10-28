@@ -54,7 +54,6 @@ vec3 calcSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {   
-    //vec3 color = phong(normalize(v_normal), normalize(u_viewPos - v_fragPos), normalize(u_lightPos - v_fragPos));
     vec3 viewDir = normalize(u_viewPos - v_fragPos);
     vec3 fragPos = v_fragPos;
     vec3 normal = normalize(v_normal);
@@ -65,7 +64,7 @@ void main()
     for(uint i = 0u; i < lightCount[1]; i++) {
         color += calcPointLight(pointLights[i], normal, fragPos, viewDir);
     }
-//    //Spot lights
+    //Spot lights
     for(uint i = 0u; i < lightCount[2]; i++) {
         color += calcSpotlight(spotlights[i], normal, fragPos, viewDir);
     }

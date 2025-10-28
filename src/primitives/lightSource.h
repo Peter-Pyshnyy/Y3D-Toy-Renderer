@@ -35,7 +35,7 @@ public:
 
 	void constructAsDirectionalLight(glm::vec3 direction);
 	void constructAsPointLight(float constant, float linear, float quadratic);
-	void constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic);
+	void constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff);
 	static bool incrementLightCount(LightType type);
 	static glm::uvec3 getLightCount();
 
