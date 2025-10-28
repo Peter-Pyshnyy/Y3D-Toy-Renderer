@@ -49,9 +49,10 @@ void LightSource::constructAsSpotlight(glm::vec3 direction, float cutOff, float 
 	this->direction = direction;
 	this->cutOff = cutOff;
 	this->outerCutOff = outerCutOff;
-	this->constant = constant;
-	this->linear = linear;
-	this->quadratic = quadratic;
+
+	this->constant = 0.0f;
+	this->linear = 0.0f;
+	this->quadratic = 0.0f;
 }
 
 bool LightSource::incrementLightCount(LightType type) {

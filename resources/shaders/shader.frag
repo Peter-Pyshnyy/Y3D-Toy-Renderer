@@ -61,14 +61,14 @@ void main()
 
     //Directional light
     vec3 color = lightCount[0] * calcDirLight(dirLight, normal, viewDir); //messy, change later
-//    //Point lights
-//    for(uint i = 0u; i < lightCount[1]; i++) {
-//        color += calcPointLight(pointLights[i], normal, fragPos, viewDir);
-//    }
+    //Point lights
+    for(uint i = 0u; i < lightCount[1]; i++) {
+        color += calcPointLight(pointLights[i], normal, fragPos, viewDir);
+    }
 //    //Spot lights
-//    for(uint i = 0u; i < lightCount[2]; i++) {
-//        color += calcSpotlight(spotlights[i], normal, fragPos, viewDir);
-//    }
+    for(uint i = 0u; i < lightCount[2]; i++) {
+        color += calcSpotlight(spotlights[i], normal, fragPos, viewDir);
+    }
 
     FragColor = vec4(color, 1.0);
 }

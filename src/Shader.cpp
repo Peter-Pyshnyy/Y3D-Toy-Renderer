@@ -279,6 +279,7 @@ void Shader::setLightSource(const LightSource& light) const
 		setVec3(name + ".specular", light.specular);
 		setVec3(name + ".direction", light.direction);
 		setFloat(name + ".cutOff", light.cutOff);
+		setFloat(name + ".outerCutOff", light.outerCutOff);
 		break;
 	}
 	default:
