@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <glm/glm.hpp>
-#include "../shader.h"
+#include "../core/shader.h"
 
 //https://learnopengl.com/Model-Loading/Mesh
 struct Vertex {

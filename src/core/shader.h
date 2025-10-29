@@ -2,7 +2,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include "primitives/lightSource.h"
+#include "lightSource.h"
 
 
 struct Shader

@@ -2,17 +2,16 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "shader.h"
-#include "Camera.h"
-#include "primitives/lightSource.h"
-#include "primitives/model.h"
+#include "camera.h"
+#include "lightSource.h"
+#include "../geometry/model.h"
 
 class Renderer {
 public:
     Renderer(int width, int height);
     ~Renderer();
 
-    void init();                  // setup GL state, shaders, lights, etc.
-    void resize(int width, int height);
+    void init();
     void renderFrame(const Camera& camera, float time, float deltaTime);
 
     void addLight(const LightSource& light);

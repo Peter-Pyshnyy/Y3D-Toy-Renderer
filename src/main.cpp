@@ -2,13 +2,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <iostream>
-#include "openglErrorReporting.h"
-#include "renderer.h"
-#include "Camera.h"
-#include "primitives/lightSource.h"
+#include "utils/openglErrorReporting.h"
+#include "core/renderer.h"
+#include "core/camera.h"
+#include "core/lightSource.h"
 
-GLuint width = 640;
-GLuint height = 480;
+GLuint width = 1280;
+GLuint height = 720;
 GLuint numIndices = 0;
 Camera camera;
 Renderer renderer(width, height);
@@ -105,7 +105,7 @@ int main() {
 	
 	// light setup
 	LightSource light;
-	light.constructAsDirectionalLight(glm::vec3(1.0, -1.0, 0.0));
+	light.constructAsDirectionalLight(glm::vec3(1.0, -1.0, -1.0));
 	renderer.addLight(light);
 
 	// model loading

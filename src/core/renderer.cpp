@@ -1,12 +1,12 @@
 // Renderer.cpp
-#include "Renderer.h"
+#include "renderer.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <filesystem>
-#include "paths.h"
+#include "../utils/paths.h"
 
 Renderer::Renderer(int w, int h) : width(w), height(h) {}
 

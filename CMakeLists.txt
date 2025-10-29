@@ -25,7 +25,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
-# glad (локальна бібліотека)
+# glad 
 add_library(glad STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include)
 
@@ -38,14 +38,14 @@ target_include_directories(stb_image INTERFACE external/stb)
 FetchContent_Declare(
   assimp
   GIT_REPOSITORY https://github.com/assimp/assimp.git
-  GIT_TAG        v6.0.2  # можна взяти останній стабільний тег з GitHub
+  GIT_TAG        v6.0.2  
 )
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
 
-# Твої .cpp файли
+# our .cpp files
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
@@ -57,8 +57,8 @@ target_link_libraries(${PROJECT_NAME}
     glm::glm
     stb_image
     assimp
-    opengl32  # це головна OpenGL бібліотека на Windows
+    opengl32 
 )
 
-# Копіюємо ресурси в build/
+# copy resources to build/
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})

@@ -39,6 +39,7 @@ struct Spotlight {
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
+uniform float u_time;
 uniform vec3 u_lightPos;
 uniform vec3 u_viewPos;
 uniform float shininess;

@@ -1,9 +1,9 @@
-#include "Camera.h"
+#include "camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 Camera::Camera() :
-	position(0.0f),
+	position(0.0f, 0.0f, 7.5f),
 	oldMousePosition(0.0f),
 	viewDirection(0.0f, 0.0f, -1.0f),
 	cameraRight(1.0f, 0.0f, 0.0f),
