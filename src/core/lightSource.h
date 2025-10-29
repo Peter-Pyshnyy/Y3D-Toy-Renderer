@@ -18,10 +18,15 @@ public:
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 
+	// directional light
+	bool isSet;
+
+	// point light
 	float constant;
 	float linear;
 	float quadratic;
 
+	// spot light
 	glm::vec3 direction;
 	float cutOff;
 	float outerCutOff;

@@ -13,6 +13,7 @@ LightSource::LightSource(
     ambient(ambient),
     diffuse(diffuse),
     specular(specular),
+	isSet(false),
     constant(0.0f),
     linear(0.0f),
     quadratic(0.0f),
@@ -24,6 +25,7 @@ LightSource::LightSource(
 
 void LightSource::constructAsDirectionalLight(glm::vec3 direction) {
 	this->type = DIRECTIONAL;
+	this->isSet = true;
 	this->direction = direction;
 	this->constant = 0.0f;
 	this->linear = 0.0f;

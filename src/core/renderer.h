@@ -20,7 +20,9 @@ public:
 private:
     int width, height;
     Shader shader;
-    std::vector<LightSource> lights;
+    LightSource dirLight;
+    std::vector<LightSource> pointLights;
+    std::vector<LightSource> spotlights;
     std::vector<Model> models;
 
     void setupShader();

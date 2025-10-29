@@ -8,7 +8,7 @@
 #include <filesystem>
 #include "../utils/paths.h"
 
-Renderer::Renderer(int w, int h) : width(w), height(h) {}
+Renderer::Renderer(int w, int h) : width(w), height(h), dirLight() {}
 
 Renderer::~Renderer() {
     shader.clear(); 
@@ -29,7 +29,26 @@ void Renderer::setupShader() {
 }
 
 void Renderer::addLight(const LightSource& light) {
-    lights.push_back(light);
+    switch (light.type) {
+    case LightType::DIRECTIONAL: {
+        dirLight = light;
+    }
+    case LightType::POINT: {
+        if (pointLights.size() < MAX_POINTLIGHTS) {
+            pointLights.push_back(light);
+        }
+        std::cout << "max pointLights reached!" << "\n";
+    }
+    case LightType::SPOT: {
+        if (spotlights.size() < MAX_SPOTLIGHTS) {
+            spotlights.push_back(light);
+        }
+        std::cout << "max spotlights reached!" << "\n";
+    }
+    default:
+        break;
+    }
+    
 }
 
 void Renderer::addModel(const std::string& name) {
@@ -40,9 +59,21 @@ void Renderer::addModel(const std::string& name) {
 
 void Renderer::updateShaderLights() {
 	//LightSource::resetLightCount(); // will break on any light source except directional light for now
-    for (const auto& light : lights)
+    if (dirLight.isSet) {
+        shader.setLightSource(dirLight);
+    }
+
+    for (const auto& light : pointLights)
         shader.setLightSource(light);
-    shader.setuVec3("lightCount", LightSource::getLightCount());
+
+    for (const auto& light : spotlights)
+        shader.setLightSource(light);
+
+    shader.setuVec3("lightCount", glm::uvec3(
+        static_cast<unsigned int>(dirLight.isSet),
+        pointLights.size(),
+        spotlights.size()
+    ));
 }
 
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
