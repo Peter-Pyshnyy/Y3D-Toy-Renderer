@@ -19,6 +19,7 @@ public:
 
 private:
     int width, height;
+	bool hasDirectionalLight = false;
     Shader shader;
     LightSource dirLight;
     std::vector<LightSource> pointLights;

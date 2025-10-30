@@ -3,6 +3,9 @@
 
 constexpr int MAX_POINTLIGHTS = 16;
 constexpr int MAX_SPOTLIGHTS = 16;
+constexpr float DEFAULT_AMBIENT = 0.1f;
+constexpr float DEFAULT_DIFFUSE = 0.8f;
+constexpr float DEFAULT_SPECULAR = 1.0f;
 
 enum LightType {
 	DIRECTIONAL,
@@ -18,32 +21,20 @@ public:
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 
-	// directional light
-	bool isSet;
-
 	// point light
 	float constant;
 	float linear;
 	float quadratic;
 
-	// spot light
+	// spot light (cutoff angles in degrees)
 	glm::vec3 direction;
 	float cutOff;
 	float outerCutOff;
 
-	LightSource(
-		glm::vec3 position = glm::vec3(0.0f),
-		glm::vec3 ambient = glm::vec3(0.1f),
-		glm::vec3 diffuse = glm::vec3(0.8f),
-		glm::vec3 specular = glm::vec3(1.0f)
-	);
+	LightSource();
+	static LightSource Directional(const glm::vec3& direction);
+	static LightSource Point(const glm::vec3& position, float constant, float linear, float quadratic);
+	static LightSource Spotlight(const glm::vec3& position, const glm::vec3& direction, float cutOff, float outerCutOff);
 
-	void constructAsDirectionalLight(glm::vec3 direction);
-	void constructAsPointLight(float constant, float linear, float quadratic);
-	void constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff);
-	static bool incrementLightCount(LightType type);
-	static glm::uvec3 getLightCount();
-
-protected:
-	static glm::uvec3 lightCount;
+	void overrideIntensities(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular);
 };

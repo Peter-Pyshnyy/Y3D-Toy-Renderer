@@ -1,4 +1,3 @@
-// Renderer.cpp
 #include "renderer.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -31,19 +30,25 @@ void Renderer::setupShader() {
 void Renderer::addLight(const LightSource& light) {
     switch (light.type) {
     case LightType::DIRECTIONAL: {
+		hasDirectionalLight = true;
         dirLight = light;
+        break;
     }
     case LightType::POINT: {
         if (pointLights.size() < MAX_POINTLIGHTS) {
             pointLights.push_back(light);
+        } else {
+            std::cout << "max pointLights reached!" << "\n";
         }
-        std::cout << "max pointLights reached!" << "\n";
+        break;
     }
     case LightType::SPOT: {
         if (spotlights.size() < MAX_SPOTLIGHTS) {
             spotlights.push_back(light);
+        } else {
+            std::cout << "max spotlights reached!" << "\n";
         }
-        std::cout << "max spotlights reached!" << "\n";
+        break;
     }
     default:
         break;
@@ -58,19 +63,20 @@ void Renderer::addModel(const std::string& name) {
 }
 
 void Renderer::updateShaderLights() {
-	//LightSource::resetLightCount(); // will break on any light source except directional light for now
-    if (dirLight.isSet) {
-        shader.setLightSource(dirLight);
+    if (hasDirectionalLight) {
+        shader.setDirectionalLight(dirLight);
     }
 
-    for (const auto& light : pointLights)
-        shader.setLightSource(light);
+    for (std::size_t i = 0; i < pointLights.size(); i++) {
+        shader.setPointLight(pointLights[i], i);
+	}
 
-    for (const auto& light : spotlights)
-        shader.setLightSource(light);
+    for (std::size_t i = 0; i < spotlights.size(); i++) {
+        shader.setSpotlight(spotlights[i], i);
+	}
 
     shader.setuVec3("lightCount", glm::uvec3(
-        static_cast<unsigned int>(dirLight.isSet),
+        static_cast<unsigned int>(hasDirectionalLight),
         pointLights.size(),
         spotlights.size()
     ));

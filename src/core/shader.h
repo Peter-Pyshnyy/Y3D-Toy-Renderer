@@ -34,5 +34,7 @@ struct Shader
 	void setMat2(const std::string& name, const glm::mat2& mat) const;
 	void setMat3(const std::string& name, const glm::mat3& mat) const;
 	void setMat4(const std::string& name, const glm::mat4& mat) const;
-	void setLightSource(const LightSource& light) const;
+	void setDirectionalLight(const LightSource& light) const;
+	void setPointLight(const LightSource& light, int i) const;
+	void setSpotlight(const LightSource& light, int i) const;
 };

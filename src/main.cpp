@@ -104,9 +104,8 @@ int main() {
 	renderer.init();
 	
 	// light setup
-	LightSource light;
-	light.constructAsDirectionalLight(glm::vec3(1.0, -1.0, -1.0));
-	renderer.addLight(light);
+	renderer.addLight(LightSource::Directional(glm::vec3(1.0f, -1.0f, 0.0f)));
+	renderer.addLight(LightSource::Spotlight(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 12.5f, 15.0f));
 
 	// model loading
 	renderer.addModel("backpack");

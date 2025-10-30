@@ -1,87 +1,58 @@
 #include "LightSource.h"
 
-glm::uvec3 LightSource::lightCount = glm::uvec3(0);
-
-LightSource::LightSource(
-    glm::vec3 position,
-    glm::vec3 ambient,
-    glm::vec3 diffuse,
-    glm::vec3 specular
-)
-    : type(POINT),
-    position(position),
-    ambient(ambient),
-    diffuse(diffuse),
-    specular(specular),
-	isSet(false),
-    constant(0.0f),
-    linear(0.0f),
-    quadratic(0.0f),
-    direction(0.0f),
-    cutOff(0.0f),
-    outerCutOff(0.0f)
+LightSource::LightSource() :
+	type(DIRECTIONAL),
+	position(0.0f),
+	ambient(0.0f),
+	diffuse(0.0f),
+	specular(0.0f),
+	constant(1.0f),
+	linear(0.0f),
+	quadratic(0.0f),
+	direction(0.0f),
+	cutOff(0.0f),
+	outerCutOff(0.0f)
 {
 }
 
-void LightSource::constructAsDirectionalLight(glm::vec3 direction) {
-	this->type = DIRECTIONAL;
-	this->isSet = true;
-	this->direction = direction;
-	this->constant = 0.0f;
-	this->linear = 0.0f;
-	this->quadratic = 0.0f;
-	this->cutOff = 0.0f;
-	this->outerCutOff = 0.0f;
+LightSource LightSource::Directional(const glm::vec3& direction) {
+	LightSource l;
+	l.ambient = glm::vec3(DEFAULT_AMBIENT);
+	l.diffuse = glm::vec3(DEFAULT_DIFFUSE);
+	l.specular = glm::vec3(DEFAULT_SPECULAR);
+	l.type = DIRECTIONAL;
+	l.direction = direction;
+	return l;
 }
 
-void LightSource::constructAsPointLight(float constant, float linear, float quadratic) {
-	this->type = POINT;
-	this->constant = constant;
-	this->linear = linear;
-	this->quadratic = quadratic;
-
-	this->direction = glm::vec3(0.0f);
-	this->cutOff = 0.0f;
-	this->outerCutOff = 0.0f;
+LightSource LightSource::Point(const glm::vec3& position, float constant, float linear, float quadratic) {
+	LightSource l;
+	l.ambient = glm::vec3(DEFAULT_AMBIENT);
+	l.diffuse = glm::vec3(DEFAULT_DIFFUSE);
+	l.specular = glm::vec3(DEFAULT_SPECULAR);
+	l.type = POINT;
+	l.position = position;
+	l.constant = constant;
+	l.linear = linear;
+	l.quadratic = quadratic;
+	return l;
 }
 
-
-void LightSource::constructAsSpotlight(glm::vec3 direction, float cutOff, float outerCutOff) {
-	this->type = SPOT;
-	this->direction = direction;
-	this->cutOff = cutOff;
-	this->outerCutOff = outerCutOff;
-
-	this->constant = 0.0f;
-	this->linear = 0.0f;
-	this->quadratic = 0.0f;
+LightSource LightSource::Spotlight(const glm::vec3& position, const glm::vec3& direction, float cutOff, float outerCutOff) { // cutOffs are in degrees
+	LightSource l;
+	l.ambient = glm::vec3(DEFAULT_AMBIENT);
+	l.diffuse = glm::vec3(DEFAULT_DIFFUSE);
+	l.specular = glm::vec3(DEFAULT_SPECULAR);
+	l.type = SPOT;
+	l.position = position;
+	l.direction = direction;
+	l.cutOff = glm::cos(glm::radians(cutOff));
+	l.outerCutOff = glm::cos(glm::radians(outerCutOff));
+	return l;
 }
 
-bool LightSource::incrementLightCount(LightType type) {
-	switch (type) {
-	case DIRECTIONAL: {
-		lightCount.x = 1; //only one directional light allowed
-		return true;
-	}
-	case POINT: {
-		if (LightSource::lightCount.y < MAX_POINTLIGHTS) {
-			LightSource::lightCount.y += 1;
-			return true;
-		}
-		return false;
-	}
-	case SPOT: {
-		if (LightSource::lightCount.z < MAX_SPOTLIGHTS) {
-			LightSource::lightCount.z += 1;
-			return true;
-		}
-		return false;
-	}
-	default:
-		return false;
-	}
+void LightSource::overrideIntensities(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular) {
+	this->ambient = ambient;
+	this->diffuse = diffuse;
+	this->specular = specular;
 }
-
-glm::uvec3 LightSource::getLightCount() {
-	return LightSource::lightCount;
-};
