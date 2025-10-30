@@ -108,7 +108,7 @@ int main() {
 	renderer.addLight(LightSource::Spotlight(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 12.5f, 15.0f));
 
 	// model loading
-	renderer.addModel("backpack");
+	renderer.addModel("cat");
 #pragma endregion
 
 	// render loop
