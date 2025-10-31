@@ -62,6 +62,10 @@ void Renderer::addModel(const std::string& name) {
     models.emplace_back(path.string());
 }
 
+void Renderer::addPrimitive(const Primitive& primitive) {
+    primitives.push_back(primitive);
+}
+
 void Renderer::updateShaderLights() {
     if (hasDirectionalLight) {
         shader.setDirectionalLight(dirLight);
@@ -96,6 +100,9 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
     shader.setVec3("u_viewPos", camera.getPosition());
 	shader.setFloat("u_time", time);
 
-    for (auto& model : models)
+    for (Primitive primitive : primitives)
+		primitive.Draw(shader);
+
+    for (Model model : models)
         model.Draw(shader);
 }

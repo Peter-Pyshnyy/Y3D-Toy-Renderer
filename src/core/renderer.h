@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "lightSource.h"
 #include "../geometry/model.h"
+#include "../geometry/primitive.h"
 
 class Renderer {
 public:
@@ -15,7 +16,8 @@ public:
     void renderFrame(const Camera& camera, float time, float deltaTime);
 
     void addLight(const LightSource& light);
-    void Renderer::addModel(const std::string& name);
+    void addModel(const std::string& name);
+    void addPrimitive(const Primitive& primitive);
 
 private:
     int width, height;
@@ -25,6 +27,7 @@ private:
     std::vector<LightSource> pointLights;
     std::vector<LightSource> spotlights;
     std::vector<Model> models;
+    std::vector<Primitive> primitives;
 
     void setupShader();
     void updateShaderLights();
