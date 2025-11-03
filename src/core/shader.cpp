@@ -3,6 +3,10 @@
 #include <fstream>
 #include <iostream>
 
+Shader::Shader(const char* vertexShaderData, const char* fragmentShaderData) {
+	loadShaderProgramFromFile(vertexShaderData, fragmentShaderData);
+}
+
 //this allocates memory!
 char *readEntireFile(const char *source)
 {

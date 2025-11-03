@@ -2,7 +2,6 @@
 
 out vec4 FragColor;
 
-in vec3 v_color;
 in vec3 v_normal;
 in vec3 v_fragPos;
 
@@ -37,17 +36,15 @@ struct Spotlight {
 };
 
 
-uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
+uniform vec3 u_color;
 uniform float u_time;
 uniform vec3 u_lightPos;
 uniform vec3 u_viewPos;
-uniform float shininess;
 uniform DirLight dirLight; //TODO: maybe change to be the first element in the pointLight array
 uniform PointLight pointLights[MAX_POINTLIGHTS];
 uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform uvec3 lightCount;
-
+float shininess = 32.0;
 //vec3 phong(LightComps multipliers, vec3 normal, vec3 viewDir, vec3 lightDir);
 //vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 //vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -64,7 +61,7 @@ uniform uvec3 lightCount;
 void main()
 {   
 
-    FragColor = vec4(v_color, 1.0);
+    FragColor = vec4(u_color, 1.0);
 
     //FragColor = vec4(vec3(linearizeDepth(gl_FragCoord.z)), 1.0);
 }

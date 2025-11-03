@@ -10,21 +10,32 @@
 Renderer::Renderer(int w, int h) : width(w), height(h), dirLight() {}
 
 Renderer::~Renderer() {
-    shader.clear(); 
+    activeShader->clear(); 
 }
 
 void Renderer::init() {
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-    setupShader();
+    setupShaders();
 }
 
-void Renderer::setupShader() {
-    std::filesystem::path vert = std::filesystem::path(SHADER_DIR) / "shader.vert";
-    std::filesystem::path frag = std::filesystem::path(SHADER_DIR) / "shader.frag";
-    shader.loadShaderProgramFromFile(vert.string().c_str(), frag.string().c_str());
-    glLinkProgram(shader.id);
-    shader.bind();
+void Renderer::setupShaders() {
+    std::filesystem::path vert = std::filesystem::path(SHADER_DIR) / "default.vert";
+    std::filesystem::path frag = std::filesystem::path(SHADER_DIR) / "default.frag";
+    shaders[ShaderType::Default] = Shader(vert.string().c_str(), frag.string().c_str());
+    glLinkProgram(shaders[ShaderType::Default].id);
+
+	vert = std::filesystem::path(SHADER_DIR) / "primitive.vert";
+	frag = std::filesystem::path(SHADER_DIR) / "primitive.frag";
+	shaders[ShaderType::Primitive] = Shader(vert.string().c_str(), frag.string().c_str());
+	glLinkProgram(shaders[ShaderType::Primitive].id); // ALAAAAAARM
+
+    shaders[ShaderType::Default].bind();
+}
+
+void Renderer::useShader(ShaderType type) {
+    activeShader = &shaders[type];
+    activeShader->bind();
 }
 
 void Renderer::addLight(const LightSource& light) {
@@ -68,41 +79,49 @@ void Renderer::addPrimitive(const Primitive& primitive) {
 
 void Renderer::updateShaderLights() {
     if (hasDirectionalLight) {
-        shader.setDirectionalLight(dirLight);
+        activeShader->setDirectionalLight(dirLight);
     }
 
     for (std::size_t i = 0; i < pointLights.size(); i++) {
-        shader.setPointLight(pointLights[i], i);
+        activeShader->setPointLight(pointLights[i], i);
 	}
 
     for (std::size_t i = 0; i < spotlights.size(); i++) {
-        shader.setSpotlight(spotlights[i], i);
+        activeShader->setSpotlight(spotlights[i], i);
 	}
 
-    shader.setuVec3("lightCount", glm::uvec3(
+    activeShader->setuVec3("lightCount", glm::uvec3(
         static_cast<unsigned int>(hasDirectionalLight),
         pointLights.size(),
         spotlights.size()
     ));
 }
 
+void Renderer::setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime) {
+    activeShader->setMat4("u_proj", projection);
+    activeShader->setMat4("u_view", camera.getWorldToViewMatrix());
+    activeShader->setVec3("u_viewPos", camera.getPosition());
+    activeShader->setFloat("u_time", time);
+    updateShaderLights();
+}
+
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    shader.bind();
-    updateShaderLights();
-
     glm::mat4 projection = glm::perspective(glm::radians(camera.getFov()),
         static_cast<float>(width) / height, 0.1f, 100.0f);
-    shader.setMat4("u_proj", projection);
-    shader.setMat4("u_view", camera.getWorldToViewMatrix());
-    shader.setVec3("u_viewPos", camera.getPosition());
-	shader.setFloat("u_time", time);
 
+    for (auto& [type, shader] : shaders) {
+		useShader(type);
+        setUniforms(camera, projection, time, deltaTime);
+	}
+    
+	useShader(ShaderType::Primitive);
     for (Primitive primitive : primitives)
-		primitive.Draw(shader);
+		primitive.Draw(shaders[ShaderType::Primitive]);
 
+	useShader(ShaderType::Default);
     for (Model model : models)
-        model.Draw(shader);
+        model.Draw(shaders[ShaderType::Default]);
 }

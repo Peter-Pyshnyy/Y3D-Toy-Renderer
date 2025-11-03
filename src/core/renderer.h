@@ -1,11 +1,17 @@
 #pragma once
 #include <vector>
 #include <glm/glm.hpp>
+#include <map>
 #include "shader.h"
 #include "camera.h"
 #include "lightSource.h"
 #include "../geometry/model.h"
 #include "../geometry/primitive.h"
+
+enum class ShaderType {
+    Default,
+    Primitive
+};
 
 class Renderer {
 public:
@@ -18,17 +24,19 @@ public:
     void addLight(const LightSource& light);
     void addModel(const std::string& name);
     void addPrimitive(const Primitive& primitive);
+	void useShader(ShaderType type);
 
 private:
     int width, height;
 	bool hasDirectionalLight = false;
-    Shader shader;
+    Shader* activeShader;
     LightSource dirLight;
     std::vector<LightSource> pointLights;
     std::vector<LightSource> spotlights;
     std::vector<Model> models;
     std::vector<Primitive> primitives;
-
-    void setupShader();
+	std::map<ShaderType, Shader> shaders;
+    void setupShaders();
     void updateShaderLights();
+	void setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime);
 };

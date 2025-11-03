@@ -4,6 +4,7 @@
 #include <iostream>
 #include "utils/openglErrorReporting.h"
 #include "core/renderer.h"
+#include "geometry/primitive.h"
 #include "core/camera.h"
 #include "core/lightSource.h"
 
@@ -108,7 +109,8 @@ int main() {
 	renderer.addLight(LightSource::Spotlight(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 12.5f, 15.0f));
 
 	// model loading
-	renderer.addModel("backpack");
+	renderer.addPrimitive({PrimitiveType::Plane});
+	//renderer.addModel("backpack");
 #pragma endregion
 
 	// render loop

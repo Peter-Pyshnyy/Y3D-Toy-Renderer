@@ -7,6 +7,9 @@
 
 struct Shader
 {
+	Shader() {};
+	Shader(const char* vertexShaderData, const char* fragmentShaderData);
+
 	GLuint id = 0;
 
 	bool loadShaderProgramFromFile(const char *vertexShaderPath, const char *fragmentShaderPath);
