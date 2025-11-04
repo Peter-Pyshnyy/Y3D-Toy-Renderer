@@ -1,4 +1,5 @@
 #include "primitive.h"
+#include <iostream>
 
 Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float scaleY, float scaleZ)
     : Mesh(), type(type), color(color) {
@@ -9,8 +10,8 @@ Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float sc
     setupMesh();
 }
 
-std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, float sy, float sz) {
-    std::vector<Vertex> vertices;
+std::vector<PrimitiveVertex> Primitive::generateVertices(PrimitiveType type, float sx, float sy, float sz) {
+    std::vector<PrimitiveVertex> vertices;
 
     switch (type) {
     case PrimitiveType::Plane: {
@@ -26,7 +27,8 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
                     (float)(x + halfX) / (2.0f * halfX),
                     (float)(z + halfZ) / (2.0f * halfZ)
                 );
-                vertices.push_back({ pos, normal, uv });
+                vertices.push_back({ pos, normal });
+				//std::cout << "Vertex Position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n";
             }
         }
         break;
@@ -53,12 +55,10 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
             {{-1, -1, -1}, { 1, -1, -1}, { 1, -1,  1}, {-1, -1,  1}},
         };
 
-        const glm::vec2 uvs[] = { {0,0},{1,0},{1,1},{0,1} };
-
         for (int f = 0; f < 6; ++f) {
             for (int v = 0; v < 4; ++v) {
                 glm::vec3 pos = positions[f][v] * 0.5f * glm::vec3(sx, sy, sz);
-                vertices.push_back({ pos, normals[f], uvs[v] });
+                vertices.push_back({ pos, normals[f] });
             }
         }
         break;
@@ -128,7 +128,7 @@ void Primitive::setupMesh() {
 }
 
 void Primitive::Draw(Shader& shader) {
-	shader.setuVec3("u_color", color);
+	shader.setVec3("u_color", color);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
