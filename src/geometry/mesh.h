@@ -23,7 +23,7 @@ public:
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
-	Mesh() {} // Default constructor for primitives
+	Mesh() : EBO(0), VAO(0), VBO(0) {} // Default constructor for primitives
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void Draw(Shader& shader);
 protected:

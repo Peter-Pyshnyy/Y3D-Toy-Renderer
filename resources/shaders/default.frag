@@ -78,6 +78,9 @@ void main()
         color += calcSpotlight(spotlights[i], normal, fragPos, viewDir);
     }
 
+    color /= (color + vec3(1.0)); //tone mapping
+    color = pow(color, vec3(1.0/2.2)); //gamma correction
+
     FragColor = vec4(color, 1.0);
 
     //FragColor = vec4(vec3(linearizeDepth(gl_FragCoord.z)), 1.0);
@@ -87,8 +90,9 @@ vec3 phong(LightComps multipliers, vec3 normal, vec3 viewDir, vec3 lightDir) {
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 ambient  = multipliers.ambient  * vec3(texture(texture_diffuse1, v_texCoords));
-    vec3 diffuse  = multipliers.diffuse  * diff * vec3(texture(texture_diffuse1, v_texCoords));
+    vec3 diffuseColor = pow(vec3(texture(texture_diffuse1, v_texCoords)), vec3(2.2)); // relinearize color space
+    vec3 ambient  = multipliers.ambient  * diffuseColor;
+    vec3 diffuse  = multipliers.diffuse  * diff * diffuseColor;
     vec3 specular = multipliers.specular * spec * vec3(texture(texture_specular1, v_texCoords));
     return ambient + diffuse + specular;
 }

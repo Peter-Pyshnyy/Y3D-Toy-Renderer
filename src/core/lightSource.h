@@ -33,7 +33,7 @@ public:
 
 	LightSource();
 	static LightSource Directional(const glm::vec3& direction);
-	static LightSource Point(const glm::vec3& position, float constant, float linear, float quadratic);
+	static LightSource Point(const glm::vec3& position, float constant = 1.0f, float linear = 0.09f, float quadratic = 0.032f);
 	static LightSource Spotlight(const glm::vec3& position, const glm::vec3& direction, float cutOff, float outerCutOff);
 
 	void overrideIntensities(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular);

@@ -10,6 +10,15 @@ Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float sc
     setupMesh();
 }
 
+Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scale)
+: Mesh(), type(type), color(color) {
+    this->vertices = generateVertices(type, scale, scale, scale);
+    this->indices = generateIndices(type, scale, scale);
+    this->textures = {};
+
+    setupMesh();
+}
+
 std::vector<PrimitiveVertex> Primitive::generateVertices(PrimitiveType type, float sx, float sy, float sz) {
     std::vector<PrimitiveVertex> vertices;
 
