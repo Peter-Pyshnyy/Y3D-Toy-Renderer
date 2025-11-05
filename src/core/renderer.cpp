@@ -114,23 +114,31 @@ void Renderer::setUniforms(const Camera& camera, glm::mat4 projection, float tim
     updateShaderLights();
 }
 
+void Renderer::drawModels(const FrameData& frame) {
+    useShader(ShaderType::Default);
+    setUniforms(frame.camera, frame.projection, frame.time, frame.deltaTime);
+    for (const Model& model : models)
+        model.Draw(shaders[ShaderType::Default]);
+}
+
+void Renderer::drawPrimitives(const FrameData& frame) {
+    useShader(ShaderType::Primitive);
+    setUniforms(frame.camera, frame.projection, frame.time, frame.deltaTime);
+    for (const Primitive& primitive : primitives)
+        primitive.Draw(shaders[ShaderType::Primitive]);
+}
+
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 projection = glm::perspective(glm::radians(camera.getFov()),
-        static_cast<float>(width) / height, 0.1f, 100.0f);
+    FrameData frame{
+        glm::perspective(glm::radians(camera.getFov()), static_cast<float>(width) / height, 0.1f, 100.0f),
+        camera,
+        time,
+        deltaTime
+    };
 
-    for (auto& [type, shader] : shaders) {
-		useShader(shader);
-        setUniforms(camera, projection, time, deltaTime);
-	}
-    
-	useShader(ShaderType::Primitive);
-    for (const Primitive& primitive : primitives)
-		primitive.Draw(shaders[ShaderType::Primitive]);
-
-	useShader(ShaderType::Default);
-    for (const Model& model : models)
-        model.Draw(shaders[ShaderType::Default]);
+    drawPrimitives(frame);
+    drawModels(frame);
 }

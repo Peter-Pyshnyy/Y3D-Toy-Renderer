@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include "mesh.h"
 
-//https://learnopengl.com/Model-Loading/Model
+//modified https://learnopengl.com/Model-Loading/Model
 
 class Model {
 public:

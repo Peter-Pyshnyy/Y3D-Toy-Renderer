@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-//https://learnopengl.com/Model-Loading/Model
+//modified https://learnopengl.com/Model-Loading/Model
 Model::Model(const std::string& path) :
 	shininess(32.0f)
 {
@@ -29,12 +29,12 @@ void Model::loadModel(std::string path) {
     }
     directory = path.substr(0, path.find_last_of('/'));
 
+    meshes.reserve(scene->mNumMeshes);
     processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene)
 {
-	meshes.reserve(scene->mNumMeshes);
     // process all the node's meshes (if any)
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {

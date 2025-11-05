@@ -3,7 +3,7 @@
 #include "mesh.h"
 
 
-//https://learnopengl.com/Model-Loading/Mesh
+//modified https://learnopengl.com/Model-Loading/Mesh
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) 
     : vertices(std::move(vertices)),
       indices(std::move(indices)),
@@ -31,9 +31,6 @@ Mesh::Mesh(Mesh&& other) noexcept
       VBO(std::exchange(other.VBO, 0)),
       EBO(std::exchange(other.EBO, 0))
 {
-    other.VAO = 0;
-    other.VBO = 0;
-    other.EBO = 0;
 }
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept

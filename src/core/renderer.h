@@ -13,6 +13,13 @@ enum class ShaderType {
     Primitive
 };
 
+struct FrameData {
+    glm::mat4 projection;
+    const Camera& camera;
+    float time;
+    float deltaTime;
+};
+
 class Renderer {
 public:
     Renderer(int width, int height);
@@ -40,4 +47,6 @@ private:
     void setupShaders();
     void updateShaderLights();
 	void setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime);
+    void drawModels(const FrameData& frame);
+    void drawPrimitives(const FrameData& frame);
 };
