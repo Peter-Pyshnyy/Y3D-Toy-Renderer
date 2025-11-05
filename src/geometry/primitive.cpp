@@ -1,7 +1,8 @@
 #include "primitive.h"
+#include <glad/glad.h>
 #include <iostream>
 
-Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float scaleY, float scaleZ)
+Primitive::Primitive(PrimitiveType type, glm::vec3& color, float scaleX, float scaleY, float scaleZ)
     : Mesh(), type(type), color(color) {
     this->vertices = generateVertices(type, scaleX, scaleY, scaleZ);
 	this->indices = generateIndices(type, scaleX, scaleZ);
@@ -10,7 +11,7 @@ Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float sc
     setupMesh();
 }
 
-Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scale)
+Primitive::Primitive(PrimitiveType type, glm::vec3& color, float scale)
 : Mesh(), type(type), color(color) {
     this->vertices = generateVertices(type, scale, scale, scale);
     this->indices = generateIndices(type, scale, scale);
@@ -25,17 +26,23 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
     switch (type) {
     case PrimitiveType::Plane: {
         // grid of vertices spaced 1 unit apart, centered at origin, facing +Y
+        if (sx <= 0 || sz <= 0) {
+            std::cerr << "Error: Plane size must be positive." << std::endl;
+            return vertices;
+		}
+
         int halfX = static_cast<int>(sx);
         int halfZ = static_cast<int>(sz);
 
+        int vertsX = (halfX * 2) + 1;
+        int vertsZ = (halfZ * 2) + 1;
+
+        // Total vertices: vertsX * vertsZ
+        vertices.reserve((2 * halfX + 1) * (2 * halfZ + 1));
         for (int z = -halfZ; z <= halfZ; ++z) {
             for (int x = -halfX; x <= halfX; ++x) {
                 glm::vec3 pos((float)x, 0.0f, (float)z);
                 glm::vec3 normal(0.0f, 1.0f, 0.0f);
-                glm::vec2 uv(
-                    (float)(x + halfX) / (2.0f * halfX),
-                    (float)(z + halfZ) / (2.0f * halfZ)
-                );
                 vertices.push_back({ pos, normal, {} });
             }
         }
@@ -43,6 +50,9 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
     }
     case PrimitiveType::Cube: {
         // unit cube centered on origin
+        // 6 faces, each with 4 vertices
+        vertices.reserve(24);
+
         const glm::vec3 normals[] = {
             { 0,  0,  1}, { 0,  0, -1},
             { 1,  0,  0}, {-1,  0,  0},
@@ -65,7 +75,7 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
 
         for (int f = 0; f < 6; ++f) {
             for (int v = 0; v < 4; ++v) {
-                glm::vec3 pos = positions[f][v] * 0.5f * glm::vec3(sx, sy, sz);
+                glm::vec3 pos = positions[f][v] * glm::vec3(sx, sy, sz);
                 vertices.push_back({ pos, normals[f], {} });
             }
         }
@@ -75,6 +85,7 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
 
     return vertices;
 }
+
 std::vector<unsigned int> Primitive::generateIndices(PrimitiveType type, float sx, float sz) {
     std::vector<unsigned int> indices;
 
@@ -85,6 +96,9 @@ std::vector<unsigned int> Primitive::generateIndices(PrimitiveType type, float s
         int vertsX = (halfX * 2) + 1;
         int vertsZ = (halfZ * 2) + 1;
 
+        // Each quad needs 6 indices (2 triangles), we have (vertsX-1) * (vertsZ-1) quads
+        int numQuads = (vertsX - 1) * (vertsZ - 1);
+        indices.reserve(numQuads * 6);
         for (int z = 0; z < vertsZ - 1; ++z) {
             for (int x = 0; x < vertsX - 1; ++x) {
                 unsigned int topLeft = z * vertsX + x;
@@ -100,6 +114,8 @@ std::vector<unsigned int> Primitive::generateIndices(PrimitiveType type, float s
         break;
     }
     case PrimitiveType::Cube: {
+        // 6 faces, each with 2 triangles, each triangle has 3 indices
+        indices.reserve(6 * 6);
         for (unsigned int f = 0; f < 6; ++f) {
             unsigned int base = f * 4;
             indices.insert(indices.end(),
