@@ -10,7 +10,11 @@
 class Model {
 public:
     Model(const std::string& path);
-    void Draw(Shader& shader);
+    Model(const Model&) = delete;
+    Model& operator=(const Model&) = delete;
+    Model(Model&&) noexcept = default;
+    Model& operator=(Model&&) noexcept = default;
+    void Draw(Shader& shader) const;
 private:
     // model data
     std::vector<Mesh> meshes;

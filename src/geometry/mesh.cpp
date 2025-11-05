@@ -4,12 +4,56 @@
 
 
 //https://learnopengl.com/Model-Loading/Mesh
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) {
-    this->vertices = vertices;
-    this->indices = indices;
-    this->textures = textures;
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) 
+    : vertices(std::move(vertices)),
+      indices(std::move(indices)),
+      textures(std::move(textures)),
+      VAO(0), VBO(0), EBO(0) 
+{
 
     setupMesh();
+}
+
+Mesh::~Mesh() {
+    if (VAO != 0)
+        glDeleteVertexArrays(1, &VAO);
+    if (VBO != 0)
+        glDeleteBuffers(1, &VBO);
+    if (EBO != 0)
+        glDeleteBuffers(1, &EBO);
+}
+
+Mesh::Mesh(Mesh&& other) noexcept
+    : vertices(std::move(other.vertices)),
+      indices(std::move(other.indices)),
+      textures(std::move(other.textures)),
+      VAO(std::exchange(other.VAO, 0)),
+      VBO(std::exchange(other.VBO, 0)),
+      EBO(std::exchange(other.EBO, 0))
+{
+    other.VAO = 0;
+    other.VBO = 0;
+    other.EBO = 0;
+}
+
+Mesh& Mesh::operator=(Mesh&& other) noexcept
+{
+    if (this != &other)
+    {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+        vertices = std::move(other.vertices);
+        indices = std::move(other.indices);
+        textures = std::move(other.textures);
+        VAO = other.VAO;
+        VBO = other.VBO;
+        EBO = other.EBO;
+        other.VAO = 0;
+        other.VBO = 0;
+        other.EBO = 0;
+    }
+    return *this;
 }
 
 void Mesh::setupMesh() {
@@ -38,7 +82,7 @@ void Mesh::setupMesh() {
 	glBindVertexArray(0);  
 }
 
-void Mesh::Draw(Shader& shader)
+void Mesh::Draw(Shader& shader) const
 {
     // bind appropriate textures
     unsigned int diffuseNr = 1;

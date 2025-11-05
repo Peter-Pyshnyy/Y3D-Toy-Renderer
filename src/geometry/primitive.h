@@ -16,7 +16,7 @@ public:
     std::vector<Vertex> vertices;
 	Primitive(PrimitiveType type, glm::vec3 color = glm::vec3(0.8f), float scale = 1.0f); // for uniform scaling
     Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float scaleY, float scaleZ);
-    void Draw(Shader& shader);
+    void Draw(Shader& shader) const override;
 private:
     void setupMesh();
     static std::vector<Vertex> generateVertices(PrimitiveType type, float sx, float sy, float sz);

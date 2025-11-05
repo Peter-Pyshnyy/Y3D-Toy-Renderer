@@ -135,7 +135,7 @@ void Primitive::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Primitive::Draw(Shader& shader) {
+void Primitive::Draw(Shader& shader) const {
 	shader.setVec3("u_color", color);
 
     glBindVertexArray(VAO);

@@ -110,7 +110,7 @@ int main() {
 	renderer.addLight(LightSource::Point(glm::vec3(2.0f, 2.0f, 2.0f)));
 
 	// model loading
-	renderer.addPrimitive({PrimitiveType::Plane, glm::vec3(0.85f), 12.0f});
+	//renderer.addPrimitive({PrimitiveType::Cube, glm::vec3(0.85f), 3.0f});
 	renderer.addModel("backpack");
 #pragma endregion
 

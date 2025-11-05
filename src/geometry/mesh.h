@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "../core/shader.h"
 
-//https://learnopengl.com/Model-Loading/Mesh
+//modified https://learnopengl.com/Model-Loading/Mesh
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
@@ -19,13 +19,21 @@ struct Texture {
 
 class Mesh {
 public:
+	Mesh() : EBO(0), VAO(0), VBO(0) {} // Default constructor for primitives
+	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+
+	// Rule of 5
+	virtual ~Mesh();
+	Mesh(const Mesh&) = delete;
+	Mesh& operator=(const Mesh&) = delete;
+	Mesh(Mesh&& other) noexcept;
+	Mesh& operator=(Mesh&& other) noexcept;
+
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
-	Mesh() : EBO(0), VAO(0), VBO(0) {} // Default constructor for primitives
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
-	void Draw(Shader& shader);
+	virtual void Draw(Shader& shader) const;
 protected:
 	unsigned int VAO, VBO, EBO;
 	void setupMesh();

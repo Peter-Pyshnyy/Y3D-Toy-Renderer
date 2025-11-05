@@ -23,8 +23,9 @@ public:
 
     void addLight(const LightSource& light);
     void addModel(const std::string& name);
-    void addPrimitive(const Primitive& primitive);
+    void addPrimitive(Primitive&& primitive);
 	void useShader(ShaderType type);
+    void useShader(Shader& shader);
 
 private:
     int width, height;

@@ -10,7 +10,10 @@
 Renderer::Renderer(int w, int h) : width(w), height(h), dirLight() {}
 
 Renderer::~Renderer() {
-    activeShader->clear(); 
+    for (auto& [type, shader] : shaders) {
+        shader.clear();
+    }
+	activeShader = nullptr;
 }
 
 void Renderer::init() {
@@ -36,6 +39,11 @@ void Renderer::setupShaders() {
 void Renderer::useShader(ShaderType type) {
     activeShader = &shaders[type];  
     activeShader->bind();
+}
+
+void Renderer::useShader(Shader& shader) {
+	activeShader = &shader;
+	activeShader->bind();
 }
 
 void Renderer::addLight(const LightSource& light) {
@@ -73,8 +81,8 @@ void Renderer::addModel(const std::string& name) {
     models.emplace_back(path.string());
 }
 
-void Renderer::addPrimitive(const Primitive& primitive) {
-    primitives.push_back(primitive);
+void Renderer::addPrimitive(Primitive&& primitive) {
+    primitives.push_back(std::move(primitive));
 }
 
 void Renderer::updateShaderLights() {
@@ -97,6 +105,7 @@ void Renderer::updateShaderLights() {
     ));
 }
 
+// assumes shader is already bound
 void Renderer::setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime) {
     activeShader->setMat4("u_proj", projection);
     activeShader->setMat4("u_view", camera.getWorldToViewMatrix());
@@ -113,15 +122,15 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
         static_cast<float>(width) / height, 0.1f, 100.0f);
 
     for (auto& [type, shader] : shaders) {
-		useShader(type);
+		useShader(shader);
         setUniforms(camera, projection, time, deltaTime);
 	}
     
 	useShader(ShaderType::Primitive);
-    for (Primitive primitive : primitives)
+    for (const Primitive& primitive : primitives)
 		primitive.Draw(shaders[ShaderType::Primitive]);
 
 	useShader(ShaderType::Default);
-    for (Model model : models)
+    for (const Model& model : models)
         model.Draw(shaders[ShaderType::Default]);
 }
