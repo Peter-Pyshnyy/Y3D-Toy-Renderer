@@ -19,8 +19,8 @@ Primitive::Primitive(PrimitiveType type, glm::vec3 color, float scale)
     setupMesh();
 }
 
-std::vector<PrimitiveVertex> Primitive::generateVertices(PrimitiveType type, float sx, float sy, float sz) {
-    std::vector<PrimitiveVertex> vertices;
+std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, float sy, float sz) {
+    std::vector<Vertex> vertices;
 
     switch (type) {
     case PrimitiveType::Plane: {
@@ -36,8 +36,7 @@ std::vector<PrimitiveVertex> Primitive::generateVertices(PrimitiveType type, flo
                     (float)(x + halfX) / (2.0f * halfX),
                     (float)(z + halfZ) / (2.0f * halfZ)
                 );
-                vertices.push_back({ pos, normal });
-				//std::cout << "Vertex Position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n";
+                vertices.push_back({ pos, normal, {} });
             }
         }
         break;
@@ -67,7 +66,7 @@ std::vector<PrimitiveVertex> Primitive::generateVertices(PrimitiveType type, flo
         for (int f = 0; f < 6; ++f) {
             for (int v = 0; v < 4; ++v) {
                 glm::vec3 pos = positions[f][v] * 0.5f * glm::vec3(sx, sy, sz);
-                vertices.push_back({ pos, normals[f] });
+                vertices.push_back({ pos, normals[f], {} });
             }
         }
         break;
@@ -121,17 +120,17 @@ void Primitive::setupMesh() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(PrimitiveVertex), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
     // vertex positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PrimitiveVertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     // vertex normals
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PrimitiveVertex), (void*)offsetof(PrimitiveVertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
     glBindVertexArray(0);
 }

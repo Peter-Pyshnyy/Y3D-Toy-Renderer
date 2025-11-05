@@ -4,12 +4,6 @@
 #include "../core/shader.h"
 #include "mesh.h"
 
-// simpler vertex structure for primitives
-struct PrimitiveVertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-};
-
 enum class PrimitiveType {
     Plane,
     Cube
@@ -19,12 +13,12 @@ class Primitive : public Mesh {
 public:
     PrimitiveType type;
 	glm::vec3 color;
-    std::vector<PrimitiveVertex> vertices;
+    std::vector<Vertex> vertices;
 	Primitive(PrimitiveType type, glm::vec3 color = glm::vec3(0.8f), float scale = 1.0f); // for uniform scaling
     Primitive(PrimitiveType type, glm::vec3 color, float scaleX, float scaleY, float scaleZ);
     void Draw(Shader& shader);
 private:
     void setupMesh();
-    static std::vector<PrimitiveVertex> generateVertices(PrimitiveType type, float sx, float sy, float sz);
+    static std::vector<Vertex> generateVertices(PrimitiveType type, float sx, float sy, float sz);
     static std::vector<unsigned int> generateIndices(PrimitiveType type, float sx, float sz);
 };

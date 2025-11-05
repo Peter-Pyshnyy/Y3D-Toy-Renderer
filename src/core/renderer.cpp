@@ -28,13 +28,13 @@ void Renderer::setupShaders() {
 	vert = std::filesystem::path(SHADER_DIR) / "primitive.vert";
 	frag = std::filesystem::path(SHADER_DIR) / "primitive.frag";
 	shaders[ShaderType::Primitive] = Shader(vert.string().c_str(), frag.string().c_str());
-	glLinkProgram(shaders[ShaderType::Primitive].id); // ALAAAAAARM
+	glLinkProgram(shaders[ShaderType::Primitive].id);
 
-    shaders[ShaderType::Default].bind();
+    useShader(ShaderType::Default);
 }
 
 void Renderer::useShader(ShaderType type) {
-    activeShader = &shaders[type];
+    activeShader = &shaders[type];  
     activeShader->bind();
 }
 
