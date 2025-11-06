@@ -110,9 +110,9 @@ int main() {
 	renderer.addLight(LightSource::Point(glm::vec3(2.0f, 2.0f, 2.0f)));
 
 	// model loading
-	// TOD: color uniform not working correctly for primitives?
-	renderer.addPrimitive({ PrimitiveType::Cube, glm::vec3(0.6f, 0.35f, 0.5f), 1.0f });
-	renderer.addModel("backpack");
+	renderer.addPrimitive({ PrimitiveType::Cube, glm::vec3(0.85), 1.0f });
+	renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
+	//renderer.addModel("backpack");
 #pragma endregion
 
 	// render loop

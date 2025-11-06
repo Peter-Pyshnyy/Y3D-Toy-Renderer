@@ -45,6 +45,7 @@ uniform PointLight pointLights[MAX_POINTLIGHTS];
 uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform uvec3 lightCount;
 float shininess = 0; // maybe make a uniform later
+vec3 diffColor;
 vec3 phong(LightComps multipliers, vec3 normal, vec3 viewDir, vec3 lightDir);
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -80,10 +81,10 @@ vec3 phong(LightComps multipliers, vec3 normal, vec3 viewDir, vec3 lightDir) {
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 ambient  = multipliers.ambient  * u_color;
-    vec3 diffuse  = multipliers.diffuse  * diff * u_color;
+    vec3 ambient  = multipliers.ambient;
+    vec3 diffuse  = multipliers.diffuse  * diff;
     vec3 specular = multipliers.specular * spec;
-    return ambient + diffuse + specular;
+    return (ambient + diffuse + specular) * u_color;
 }
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
