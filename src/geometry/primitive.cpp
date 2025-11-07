@@ -25,6 +25,7 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
 
     switch (type) {
     case PrimitiveType::Plane: {
+		// TODO: change to be able to specify size AND subdivisions
         // grid of vertices spaced 1 unit apart, centered at origin, facing +Y
         if (sx <= 0 || sz <= 0) {
             std::cerr << "Error: Plane size must be positive." << std::endl;
@@ -34,10 +35,6 @@ std::vector<Vertex> Primitive::generateVertices(PrimitiveType type, float sx, fl
         int halfX = static_cast<int>(sx);
         int halfZ = static_cast<int>(sz);
 
-        int vertsX = (halfX * 2) + 1;
-        int vertsZ = (halfZ * 2) + 1;
-
-        // Total vertices: vertsX * vertsZ
         vertices.reserve((2 * halfX + 1) * (2 * halfZ + 1));
         for (int z = -halfZ; z <= halfZ; ++z) {
             for (int x = -halfX; x <= halfX; ++x) {
