@@ -114,11 +114,19 @@ void Renderer::setUniforms(const Camera& camera, glm::mat4 projection, float tim
     updateShaderLights();
 }
 
+void Renderer::submitModel(const Model& model, const glm::mat4& transform) {
+	drawList.models.push_back({ &model, transform });
+}
+
+void Renderer::submitPrimitive(const Primitive& primitive, const glm::mat4& transform) {
+	drawList.primitives.push_back({ &primitive, transform });
+}
+
 void Renderer::drawModels(const FrameData& frame) {
     useShader(ShaderType::Default);
     setUniforms(frame.camera, frame.projection, frame.time, frame.deltaTime);
-    for (const Model& model : models)
-        model.Draw(shaders[ShaderType::Default]);
+    for (const auto& modelEntry : drawList.models)
+        modelEntry.model->Draw(shaders[ShaderType::Default]);
 }
 
 void Renderer::drawPrimitives(const FrameData& frame) {

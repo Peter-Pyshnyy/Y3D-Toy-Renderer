@@ -2,8 +2,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <memory>
+#include <filesystem>
+#include "utils/paths.h"
 #include "utils/openglErrorReporting.h"
 #include "core/renderer.h"
+#include "core/scene/scene.h"
+#include "core/scene/nodes/geometryNode.h"
 #include "geometry/primitive.h"
 #include "core/camera.h"
 #include "core/lightSource.h"
@@ -13,6 +18,7 @@ GLuint height = 720;
 GLuint numIndices = 0;
 Camera camera;
 Renderer renderer(width, height);
+Scene scene;
 
 float lastFrame = 0.0f;
 
@@ -110,9 +116,11 @@ int main() {
 	renderer.addLight(LightSource::Point(glm::vec3(2.0f, 2.0f, 2.0f)));
 
 	// model loading
-	renderer.addPrimitive({ PrimitiveType::Cube, glm::vec3(0.85), 1.0f });
-	renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
-	//renderer.addModel("backpack");
+	//renderer.addPrimitive({ PrimitiveType::Cube, glm::vec3(0.85), 1.0f });
+	//renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
+	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("backpack/backpack.obj");
+	std::unique_ptr<GeometryNode> modelNode = std::make_unique<GeometryNode>("test", std::make_shared<Model>(path.string()));
+	scene.getRoot().addChild(std::move(modelNode));
 #pragma endregion
 
 	// render loop

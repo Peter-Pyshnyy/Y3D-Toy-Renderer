@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "../renderer.h"
 
 Scene::Scene() : root(std::make_unique<SceneNode>("root")) {}
 
@@ -15,8 +16,15 @@ Scene& Scene::operator=(Scene&& other) noexcept {
 	return *this;
 }
 
-void draw() const {
-	root->draw(); // change later 
+void Scene::submit(Renderer& renderer) const {
+	submitRecursive(*root, renderer);
+}
+
+void Scene::submitRecursive(const SceneNode& node, Renderer& renderer) const {
+	node.submit(renderer);
+
+	for (const auto& child : node.children)
+		submitRecursive(*child, renderer);
 }
 
 SceneNode* Scene::getRoot() const {

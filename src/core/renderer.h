@@ -20,6 +20,33 @@ struct FrameData {
     float deltaTime;
 };
 
+struct DrawList {
+    struct ModelEntry {
+        const Model* model;
+        glm::mat4 transform;
+    };
+
+    struct PrimitiveEntry {
+        const Primitive* primitive;
+        glm::mat4 transform;
+    };
+
+    struct LightEntry {
+        LightSource light;
+        glm::mat4 transform;
+    };
+
+    std::vector<ModelEntry> models;
+    std::vector<PrimitiveEntry> primitives;
+    std::vector<LightEntry> lights;
+
+    void clear() {
+        models.clear();
+        primitives.clear();
+        lights.clear();
+    }
+};
+
 class Renderer {
 public:
     Renderer(int width, int height);
@@ -33,7 +60,8 @@ public:
     void addPrimitive(Primitive&& primitive);
 	void useShader(ShaderType type);
     void useShader(Shader& shader);
-
+	void submitModel(const Model& model, const glm::mat4& transform);
+	void submitPrimitive(const Primitive& primitive, const glm::mat4& transform);
 private:
     int width, height;
 	bool hasDirectionalLight = false;
@@ -44,6 +72,7 @@ private:
     std::vector<Model> models;
     std::vector<Primitive> primitives;
 	std::map<ShaderType, Shader> shaders;
+	DrawList drawList;
     void setupShaders();
     void updateShaderLights();
 	void setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime);

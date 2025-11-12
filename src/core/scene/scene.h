@@ -4,6 +4,8 @@
 #include <vector>
 #include "sceneNode.h"
 
+class Renderer;
+
 class Scene {
 public:
 	Scene(); // TODO: make ctor create a default root node
@@ -15,8 +17,9 @@ public:
 	Scene(Scene&&) noexcept = default;
 	Scene& operator=(Scene&&) noexcept = default;
 
-	void draw() const;
+	void submit(Renderer& renderer) const;
 	SceneNode& getRoot() const;
 private:
 	std::unique_ptr<SceneNode> root;
+	void submitRecursive(const SceneNode& node, Renderer& renderer) const;
 };
