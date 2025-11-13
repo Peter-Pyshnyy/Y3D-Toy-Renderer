@@ -2,7 +2,7 @@
 #include "../renderer.h"
 
 SceneNode::SceneNode(const std::string& name)
-    : name(name), parent(nullptr), children(), modelMatrix(1.0f), transform({ {0.0f}, {0.0f}, {1.0f} })
+    : name(name), parent(nullptr), children(), modelMatrix(1.0f), transform()
 {
 }
 

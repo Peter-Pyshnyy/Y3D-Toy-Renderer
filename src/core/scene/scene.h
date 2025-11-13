@@ -8,17 +8,17 @@ class Renderer;
 
 class Scene {
 public:
-	Scene(); // TODO: make ctor create a default root node
+	Scene(); 
 
 	// Rule of 5
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
-	Scene(Scene&&) noexcept = default;
-	Scene& operator=(Scene&&) noexcept = default;
+	Scene(Scene&&) noexcept;
+	Scene& operator=(Scene&&) noexcept;
 
 	void submit(Renderer& renderer) const;
-	SceneNode& getRoot() const;
+	SceneNode* getRoot() const;
 private:
 	std::unique_ptr<SceneNode> root;
 	void submitRecursive(const SceneNode& node, Renderer& renderer) const;

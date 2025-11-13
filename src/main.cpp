@@ -120,7 +120,7 @@ int main() {
 	//renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
 	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("backpack/backpack.obj");
 	std::unique_ptr<GeometryNode> modelNode = std::make_unique<GeometryNode>("test", std::make_shared<Model>(path.string()));
-	scene.getRoot().addChild(std::move(modelNode));
+	scene.getRoot()->addChild(std::move(modelNode));
 #pragma endregion
 
 	// render loop
