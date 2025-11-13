@@ -62,6 +62,7 @@ public:
     void useShader(Shader& shader);
 	void submitModel(const Model& model, const glm::mat4& transform);
 	void submitPrimitive(const Primitive& primitive, const glm::mat4& transform);
+    void clearDrawList();
 private:
     int width, height;
 	bool hasDirectionalLight = false;
@@ -75,7 +76,7 @@ private:
 	DrawList drawList;
     void setupShaders();
     void updateShaderLights();
-	void setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime);
+	void setUniforms(const FrameData& frame, const glm::mat4& pos = glm::mat4(1.0f));
     void drawModels(const FrameData& frame);
     void drawPrimitives(const FrameData& frame);
 };

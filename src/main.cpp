@@ -119,8 +119,15 @@ int main() {
 	//renderer.addPrimitive({ PrimitiveType::Cube, glm::vec3(0.85), 1.0f });
 	//renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
 	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("backpack/backpack.obj");
-	std::unique_ptr<GeometryNode> modelNode = std::make_unique<GeometryNode>("test", std::make_shared<Model>(path.string()));
-	scene.getRoot()->addChild(std::move(modelNode));
+	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
+	std::unique_ptr<GeometryNode> modelNode = std::make_unique<GeometryNode>("test", backpackModel);
+	modelNode->scale(glm::vec3(2.5f));
+	modelNode->translate(glm::vec3(0.0f, -5.5f, -15.0f));
+	modelNode->rotate(glm::vec3(30.0f, 70.0f, 0.0f));
+	std::unique_ptr<GeometryNode> modelNode2 = std::make_unique<GeometryNode>("test2", backpackModel);
+
+	modelNode2->addChild(std::move(modelNode));
+	scene.getRoot()->addChild(std::move(modelNode2));
 	scene.submit(renderer);
 #pragma endregion
 
@@ -131,6 +138,10 @@ int main() {
 
 		float currentFrame = glfwGetTime();
 		float deltaTime = currentFrame - lastFrame;
+
+		scene.getRoot()->getChild(0)->rotate(glm::vec3(0.0f, 5.0f * deltaTime, 0.0f));
+		scene.submit(renderer);
+		
 		camera.move(deltaTime);
 		renderer.renderFrame(camera, glfwGetTime(), deltaTime);
 		lastFrame = currentFrame;

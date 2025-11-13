@@ -106,11 +106,12 @@ void Renderer::updateShaderLights() {
 }
 
 // assumes shader is already bound
-void Renderer::setUniforms(const Camera& camera, glm::mat4 projection, float time, float deltaTime) {
-    activeShader->setMat4("u_proj", projection);
-    activeShader->setMat4("u_view", camera.getWorldToViewMatrix());
-    activeShader->setVec3("u_viewPos", camera.getPosition());
-    activeShader->setFloat("u_time", time);
+void Renderer::setUniforms(const FrameData& frame, const glm::mat4& model) {
+    activeShader->setMat4("u_proj", frame.projection);
+    activeShader->setMat4("u_view", frame.camera.getWorldToViewMatrix());
+    activeShader->setMat4("u_model", model);
+    activeShader->setVec3("u_viewPos", frame.camera.getPosition());
+    activeShader->setFloat("u_time", frame.time);
     updateShaderLights();
 }
 
@@ -124,16 +125,21 @@ void Renderer::submitPrimitive(const Primitive& primitive, const glm::mat4& tran
 
 void Renderer::drawModels(const FrameData& frame) {
     useShader(ShaderType::Default);
-    setUniforms(frame.camera, frame.projection, frame.time, frame.deltaTime);
-    for (const DrawList::ModelEntry& modelEntry : drawList.models)
+    for (const DrawList::ModelEntry& modelEntry : drawList.models) {
+        setUniforms(frame, modelEntry.transform);
         modelEntry.model->Draw(shaders[ShaderType::Default]);
+    }
 }
 
 void Renderer::drawPrimitives(const FrameData& frame) {
     useShader(ShaderType::Primitive);
-    setUniforms(frame.camera, frame.projection, frame.time, frame.deltaTime);
+    setUniforms(frame);
     for (const Primitive& primitive : primitives)
         primitive.Draw(shaders[ShaderType::Primitive]);
+}
+
+void Renderer::clearDrawList() {
+	drawList.clear();
 }
 
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {

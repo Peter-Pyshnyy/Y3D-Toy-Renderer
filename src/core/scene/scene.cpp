@@ -17,6 +17,7 @@ Scene& Scene::operator=(Scene&& other) noexcept {
 }
 
 void Scene::submit(Renderer& renderer) const {
+	renderer.clearDrawList(); //remove later
 	submitRecursive(*root, renderer);
 }
 
