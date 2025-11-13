@@ -1,4 +1,6 @@
 #include "sceneNode.h"
+#include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 #include "../renderer.h"
 
 SceneNode::SceneNode(const std::string& name)
@@ -7,8 +9,8 @@ SceneNode::SceneNode(const std::string& name)
 }
 
 SceneNode::~SceneNode() {
-	for (SceneNode* child : children) {
-		delete child;
+	for (auto&& child : children) {
+		child.release();
 	}
 	parent = nullptr;
 }
@@ -25,7 +27,7 @@ std::unique_ptr<SceneNode> SceneNode::removeChild(SceneNode* child) {
         [child](const std::unique_ptr<SceneNode>& p) { return p.get() == child; });
 
     if (found == children.end())
-        throw std::runtime_error("Child not found in SceneNode::removeChild");
+		std::cout << "Child not found in SceneNode::removeChild" << "\n";
 
 	std::unique_ptr<SceneNode> result = std::move(*found); // found is an iterator to unique_ptr, thus *found is the unique_ptr
     children.erase(found);
@@ -48,7 +50,7 @@ SceneNode* SceneNode::getParent() const {
 }
 
 void SceneNode::setModelMatrix(const glm::mat4& matrix) {
-	modelMatrix = matrix
+    modelMatrix = matrix;
 }
 
 void SceneNode::translate(const glm::vec3& delta) {
@@ -89,4 +91,4 @@ void SceneNode::updateTransform() {
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 }
 
-void submit(Renderer& renderer) const {}
+void SceneNode::submit(Renderer& renderer) const {}
