@@ -125,7 +125,7 @@ void Renderer::submitPrimitive(const Primitive& primitive, const glm::mat4& tran
 void Renderer::drawModels(const FrameData& frame) {
     useShader(ShaderType::Default);
     setUniforms(frame.camera, frame.projection, frame.time, frame.deltaTime);
-    for (const auto& modelEntry : drawList.models)
+    for (const DrawList::ModelEntry& modelEntry : drawList.models)
         modelEntry.model->Draw(shaders[ShaderType::Default]);
 }
 
