@@ -12,11 +12,12 @@ uniform float u_time;
 uniform mat4 u_proj;
 uniform mat4 u_view;
 uniform mat4 u_model;
+uniform mat4 u_normalMatrix;
 
 void main()
 {
     v_texCoords = aTexCoords;    
-    v_normal = aNormal;
-    v_fragPos = aPos;
+    v_normal = (u_normalMatrix * vec4(aNormal, 1.0)).xyz;
+    v_fragPos = (u_model * vec4(aPos, 1.0)).xyz;
     gl_Position = u_proj * u_view * u_model * vec4(aPos, 1.0);
 }

@@ -110,6 +110,7 @@ void Renderer::setUniforms(const FrameData& frame, const glm::mat4& model) {
     activeShader->setMat4("u_proj", frame.projection);
     activeShader->setMat4("u_view", frame.camera.getWorldToViewMatrix());
     activeShader->setMat4("u_model", model);
+	activeShader->setMat4("u_normalMatrix", glm::transpose(glm::inverse(model)));
     activeShader->setVec3("u_viewPos", frame.camera.getPosition());
     activeShader->setFloat("u_time", frame.time);
     updateShaderLights();

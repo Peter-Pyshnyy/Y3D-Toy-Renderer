@@ -145,7 +145,7 @@ int main() {
 		float currentFrame = glfwGetTime();
 		float deltaTime = currentFrame - lastFrame;
 
-		scene.getRoot()->getChild(0)->rotate(glm::vec3(0.0f, 5.0f * deltaTime, 0.0f));
+		scene.getRoot()->getChild(0)->rotate(glm::vec3(0.0f, 6.0f * deltaTime, 0.0f));
 		scene.submit(renderer);
 		
 		camera.move(deltaTime);
