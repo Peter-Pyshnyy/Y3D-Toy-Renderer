@@ -8,7 +8,8 @@
 #include "utils/openglErrorReporting.h"
 #include "core/renderer.h"
 #include "core/scene/scene.h"
-#include "core/scene/nodes/geometryNode.h"
+#include "core/scene/nodes/modelNode.h"
+#include "core/scene/nodes/primitiveNode.h"
 #include "geometry/primitive.h"
 #include "core/camera.h"
 #include "core/lightSource.h"
@@ -120,14 +121,19 @@ int main() {
 	//renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
 	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("backpack/backpack.obj");
 	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
-	std::unique_ptr<GeometryNode> modelNode = std::make_unique<GeometryNode>("test", backpackModel);
+	std::unique_ptr<ModelNode> modelNode = std::make_unique<ModelNode>("test", backpackModel);
 	modelNode->scale(glm::vec3(2.5f));
 	modelNode->translate(glm::vec3(0.0f, -5.5f, -15.0f));
 	modelNode->rotate(glm::vec3(30.0f, 70.0f, 0.0f));
-	std::unique_ptr<GeometryNode> modelNode2 = std::make_unique<GeometryNode>("test2", backpackModel);
-
+	std::unique_ptr<ModelNode> modelNode2 = std::make_unique<ModelNode>("test2", backpackModel);
 	modelNode2->addChild(std::move(modelNode));
+
+	std::unique_ptr<PrimitiveNode> cubeNode = std::make_unique<PrimitiveNode>("cube");
+	cubeNode->translate(glm::vec3(5.0f, 0.0f, 0.0f));
+	modelNode2->addChild(std::move(cubeNode));
+
 	scene.getRoot()->addChild(std::move(modelNode2));
+
 	scene.submit(renderer);
 #pragma endregion
 

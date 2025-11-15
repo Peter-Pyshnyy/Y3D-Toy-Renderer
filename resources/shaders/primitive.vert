@@ -9,10 +9,11 @@ out vec3 v_fragPos;
 uniform float u_time;
 uniform mat4 u_proj;
 uniform mat4 u_view;
+uniform mat4 u_model;
 
 void main()
 {
     v_normal = aNormal;
     v_fragPos = aPos;
-    gl_Position = u_proj * u_view * vec4(aPos, 1.0);
+    gl_Position = u_proj * u_view * u_model * vec4(aPos, 1.0);
 }

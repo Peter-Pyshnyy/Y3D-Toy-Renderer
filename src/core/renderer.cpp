@@ -133,9 +133,10 @@ void Renderer::drawModels(const FrameData& frame) {
 
 void Renderer::drawPrimitives(const FrameData& frame) {
     useShader(ShaderType::Primitive);
-    setUniforms(frame);
-    for (const Primitive& primitive : primitives)
-        primitive.Draw(shaders[ShaderType::Primitive]);
+    for (const DrawList::PrimitiveEntry& primitiveEntry : drawList.primitives) {
+        setUniforms(frame, primitiveEntry.transform);
+        primitiveEntry.primitive->Draw(shaders[ShaderType::Primitive]);
+    }
 }
 
 void Renderer::clearDrawList() {
