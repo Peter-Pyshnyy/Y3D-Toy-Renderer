@@ -16,7 +16,7 @@ public:
 		SceneNode::updateTransform();
 		glm::mat4 posTransform = getWorldTransform();
 		glm::mat4 dirTransform = glm::transpose(glm::inverse(posTransform));
-		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 0.0f));
+		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 1.0f));
 		properties.direction = glm::normalize(glm::vec3(dirTransform * glm::vec4(properties.direction, 0.0f)));
 	}
 

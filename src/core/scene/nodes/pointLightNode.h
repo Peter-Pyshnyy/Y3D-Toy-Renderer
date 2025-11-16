@@ -14,7 +14,7 @@ public:
 	void updateTransform() override {
 		SceneNode::updateTransform();
 		glm::mat4 posTransform = getWorldTransform();
-		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 0.0f));
+		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 1.0f));
 	}
 
 	void submit(Renderer& renderer) const override {

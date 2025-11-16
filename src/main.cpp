@@ -128,7 +128,7 @@ int main() {
 	std::unique_ptr<SceneNode> emptyNode = std::make_unique<SceneNode>("empty");
 
 	cubeNode->translate(glm::vec3(5.0f, 0.0f, 0.0f));
-	pl->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
+	pl->translate(glm::vec3(2.0f, 0.0f, 0.0f));
 
 	emptyNode->addChild(std::move(pl));
 	//emptyNode->addChild(std::move(cubeNode));
