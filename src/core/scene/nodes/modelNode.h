@@ -10,7 +10,9 @@ public:
 	void setModel(const std::shared_ptr<Model>& model) { this->model = model; }
 	std::shared_ptr<Model> getModel() const { return model; }
 	void submit(Renderer& renderer) const override {
-		renderer.submitModel(*model, getWorldTransform()); // TODO: strore transforms locally and pass them down the scene graph
+		renderer.submit(*model, getWorldTransform()); 
+		// TODO: strore transforms locally and pass them down the scene graph
+		// when doing that, make sure to multiply parent's world transform with local transform on addChild
 	}
 private:
 	std::shared_ptr<Model> model;

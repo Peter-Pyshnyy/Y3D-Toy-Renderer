@@ -247,7 +247,7 @@ void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
 	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 // ------------------------------------------------------------------------
-void Shader::setDirectionalLight(const LightSource& light) const
+void Shader::setDirectionalLight(const DirectionalLight& light) const
 {
 	setVec3("dirLight.direction", light.direction);
 	setVec3("dirLight.multipliers.ambient", light.ambient);
@@ -255,7 +255,7 @@ void Shader::setDirectionalLight(const LightSource& light) const
 	setVec3("dirLight.multipliers.specular", light.specular);
 }
 // ------------------------------------------------------------------------
-void Shader::setPointLight(const LightSource& light, int i) const
+void Shader::setPointLight(const PointLight& light, int i) const
 {
 	std::string name = "pointLights[" + std::to_string(i) + "]";
 	setVec3(name + ".position", light.position);
@@ -267,7 +267,7 @@ void Shader::setPointLight(const LightSource& light, int i) const
 	setFloat(name + ".quadratic", light.quadratic);
 }
 // ------------------------------------------------------------------------
-void Shader::setSpotlight(const LightSource& light, int i) const
+void Shader::setSpotlight(const Spotlight& light, int i) const
 {
 	std::string name = "spotlights[" + std::to_string(i) + "]";
 	setVec3(name + ".position", light.position);

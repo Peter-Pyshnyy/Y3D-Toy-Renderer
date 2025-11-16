@@ -7,7 +7,10 @@
 #include <filesystem>
 #include "../utils/paths.h"
 
-Renderer::Renderer(int w, int h) : width(w), height(h), dirLight() {}
+constexpr int MAX_POINTLIGHTS = 16;
+constexpr int MAX_SPOTLIGHTS = 16;
+
+Renderer::Renderer(int w, int h) : width(w), height(h) {}
 
 Renderer::~Renderer() {
     for (auto& [type, shader] : shaders) {
@@ -46,35 +49,6 @@ void Renderer::useShader(Shader& shader) {
 	activeShader->bind();
 }
 
-void Renderer::addLight(const LightSource& light) {
-    switch (light.type) {
-    case LightType::DIRECTIONAL: {
-		hasDirectionalLight = true;
-        dirLight = light;
-        break;
-    }
-    case LightType::POINT: {
-        if (pointLights.size() < MAX_POINTLIGHTS) {
-            pointLights.push_back(light);
-        } else {
-            std::cout << "max pointLights reached!" << "\n";
-        }
-        break;
-    }
-    case LightType::SPOT: {
-        if (spotlights.size() < MAX_SPOTLIGHTS) {
-            spotlights.push_back(light);
-        } else {
-            std::cout << "max spotlights reached!" << "\n";
-        }
-        break;
-    }
-    default:
-        break;
-    }
-    
-}
-
 void Renderer::addModel(const std::string& name) {
     // assuming models stored in MODEL_DIR/name/name.obj
 	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path(name + "/" + name + ".obj"); 
@@ -86,22 +60,22 @@ void Renderer::addPrimitive(Primitive&& primitive) {
 }
 
 void Renderer::updateShaderLights() {
-    if (hasDirectionalLight) {
-        activeShader->setDirectionalLight(dirLight);
+    if (drawList.hasDirectionalLight) {
+        activeShader->setDirectionalLight(drawList.directionalLight);
     }
 
-    for (std::size_t i = 0; i < pointLights.size(); i++) {
-        activeShader->setPointLight(pointLights[i], i);
+    for (std::size_t i = 0; i < drawList.pointLights.size(); i++) {
+        activeShader->setPointLight(drawList.pointLights[i], i);
 	}
 
-    for (std::size_t i = 0; i < spotlights.size(); i++) {
-        activeShader->setSpotlight(spotlights[i], i);
+    for (std::size_t i = 0; i < drawList.spotlights.size(); i++) {
+        activeShader->setSpotlight(drawList.spotlights[i], i);
 	}
 
     activeShader->setuVec3("lightCount", glm::uvec3(
-        static_cast<unsigned int>(hasDirectionalLight),
-        pointLights.size(),
-        spotlights.size()
+        static_cast<unsigned int>(drawList.hasDirectionalLight),
+        drawList.pointLights.size(),
+        drawList.spotlights.size()
     ));
 }
 
@@ -116,12 +90,30 @@ void Renderer::setUniforms(const FrameData& frame, const glm::mat4& model) {
     updateShaderLights();
 }
 
-void Renderer::submitModel(const Model& model, const glm::mat4& transform) {
+// model submission
+void Renderer::submit(const Model& model, const glm::mat4& transform) {
 	drawList.models.push_back({ &model, transform });
 }
 
-void Renderer::submitPrimitive(const Primitive& primitive, const glm::mat4& transform) {
+// primitive submission
+void Renderer::submit(const Primitive& primitive, const glm::mat4& transform) {
 	drawList.primitives.push_back({ &primitive, transform });
+}
+
+// directional light submission
+void Renderer::submit(const DirectionalLight& l) {
+	drawList.directionalLight = l;
+	drawList.hasDirectionalLight = true;
+}
+
+// point light submission
+void Renderer::submit(const PointLight& l) {
+    drawList.pointLights.push_back(l);
+}
+
+// spotlight submission
+void Renderer::submit(const Spotlight& l) {
+    drawList.spotlights.push_back(l);
 }
 
 void Renderer::drawModels(const FrameData& frame) {
