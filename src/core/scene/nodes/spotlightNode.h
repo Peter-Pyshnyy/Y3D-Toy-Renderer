@@ -3,21 +3,31 @@
 #include <memory>
 #include "../../lightData.h"
 
+constexpr glm::vec3 DEFAULT_SPOTLIGHT_DIRECTION = glm::vec3(0.0f, 0.0f, -1.0f);
+
 class SpotlightNode : public SceneNode {
 public:
-	SpotlightNode(const std::string& name, glm::vec3& pos = glm::vec3(0.0f), glm::vec3& dir = glm::vec3(0.0f, 0.0f, -1.0f))
+	SpotlightNode(const std::string& name, glm::vec3& pos = glm::vec3(0.0f))
 		: SceneNode(name), properties{} {
 		properties.position = pos;
-		properties.direction = dir;
+		properties.direction = DEFAULT_SPOTLIGHT_DIRECTION;
 	}
 	virtual ~SpotlightNode() = default;
 
-	void updateLocalTransform() override {
-		SceneNode::updateLocalTransform();
-		glm::mat4 posTransform = getWorldTransform();
-		glm::mat4 dirTransform = glm::transpose(glm::inverse(posTransform));
-		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 1.0f));
-		properties.direction = glm::normalize(glm::vec3(dirTransform * glm::vec4(properties.direction, 0.0f)));
+	void updateWorldTransform(const glm::mat4& parentsWorld) override {
+		if (dirty) {
+			SceneNode::updateWorldTransform(parentsWorld);
+			updateProperties();
+		}
+		else {
+			SceneNode::updateWorldTransform(parentsWorld);
+		}
+	}
+
+	void updateProperties() {
+		glm::mat4 dirTransform = glm::transpose(glm::inverse(worldMatrix));
+		properties.position = (worldMatrix * glm::vec4(transform.position, 1.0f));
+		properties.direction = glm::normalize(dirTransform * glm::vec4(DEFAULT_SPOTLIGHT_DIRECTION, 0.0f));
 	}
 
 	void submit(Renderer& renderer) const override {

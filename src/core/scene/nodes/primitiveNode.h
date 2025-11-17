@@ -11,7 +11,7 @@ public:
 	void setPrimitive(const std::shared_ptr<Primitive>& primitive) { this->primitive = primitive; }
 	std::shared_ptr<Primitive> getPrimitive() const { return primitive; }
 	void submit(Renderer& renderer) const override {
-		renderer.submit(*primitive, getWorldTransform());
+		renderer.submit(*primitive, worldMatrix);
 	}
 private:
 	std::shared_ptr<Primitive> primitive;

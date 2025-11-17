@@ -275,6 +275,6 @@ void Shader::setSpotlight(const Spotlight& light, int i) const
 	setVec3(name + ".multipliers.diffuse", light.diffuse);
 	setVec3(name + ".multipliers.specular", light.specular);
 	setVec3(name + ".direction", light.direction);
-	setFloat(name + ".cutOff", light.cutOff);
-	setFloat(name + ".outerCutOff", light.outerCutOff);
+	setFloat(name + ".cutOff", glm::cos(glm::radians(light.cutOff)));
+	setFloat(name + ".outerCutOff", glm::cos(glm::radians(light.outerCutOff)));
 }

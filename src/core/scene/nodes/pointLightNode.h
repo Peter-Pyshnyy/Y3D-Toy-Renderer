@@ -11,9 +11,14 @@ public:
 	}
 	virtual ~PointLightNode() = default;
 
-	void updateWorldTransform() override {
-		SceneNode::updateWorldTransform();
-		updateProperties();
+	void updateWorldTransform(const glm::mat4& parentsWorld) override {
+		if (dirty) {
+			SceneNode::updateWorldTransform(parentsWorld);
+			updateProperties();
+		}
+		else {
+			SceneNode::updateWorldTransform(parentsWorld);
+		}
 	}
 
 	void updateProperties() {

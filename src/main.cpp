@@ -12,6 +12,7 @@
 #include "core/scene/nodes/modelNode.h"
 #include "core/scene/nodes/primitiveNode.h"
 #include "core/scene/nodes/pointLightNode.h"
+#include "core/scene/nodes/spotlightNode.h"
 #include "core/scene/nodes/emptyNode.h"
 #include "geometry/primitive.h"
 #include "core/camera.h"
@@ -117,22 +118,26 @@ int main() {
 	
 
 	// model loading
-	//renderer.addPrimitive({ PrimitiveType::Cube, glm::vec3(0.85), 1.0f });
-	//renderer.addPrimitive({ PrimitiveType::Plane, glm::vec3(0.8f, 0.25f, 0.75f), 5.0f });
 	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("backpack/backpack.obj");
 	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
 
 	std::unique_ptr<ModelNode> modelNode = std::make_unique<ModelNode>("test", backpackModel);
 	std::unique_ptr<PrimitiveNode> cubeNode = std::make_unique<PrimitiveNode>("cube");
-	std::unique_ptr<PointLightNode> pl = std::make_unique<PointLightNode>("pointLight1");
+	std::unique_ptr<SpotlightNode> pl = std::make_unique<SpotlightNode>("spotlight");
+	std::unique_ptr<SpotlightNode> sl = std::make_unique<SpotlightNode>("spotlight2");
 	std::unique_ptr<SceneNode> emptyNode = std::make_unique<SceneNode>("empty");
 
-	cubeNode->translate(glm::vec3(5.0f, 0.0f, 0.0f));
-	pl->translate(glm::vec3(2.0f, 0.0f, 0.0f));
+	pl->rotate(glm::vec3(0.0f, 180.0f, 0.0f));
 
-	emptyNode->addChild(std::move(pl));
-	//emptyNode->addChild(std::move(cubeNode));
+	cubeNode->translate(glm::vec3(3.0f, 0.0f, 0.0f));
+	cubeNode->scale(glm::vec3(0.3f));
+	cubeNode->addChild(std::move(pl));
+
+	emptyNode->addChild(std::move(cubeNode));
 	modelNode->addChild(std::move(emptyNode));
+
+	sl->translate(glm::vec3(0.0f, 0.0f, 2.0f));
+	modelNode->addChild(std::move(sl));
 
 	scene.getRoot()->addChild(std::move(modelNode));
 
