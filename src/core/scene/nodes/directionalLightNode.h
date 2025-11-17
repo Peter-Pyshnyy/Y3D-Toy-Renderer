@@ -7,9 +7,9 @@ constexpr glm::vec3 DEFAULT_DIRECTION = glm::vec3(0.0f, -1.0f, 0.0f);
 
 class DirectionalLightNode : public SceneNode {
 public:
-	DirectionalLightNode(glm::vec3& dir = glm::vec3(1.0f, -1.0f, 0.0f))
+	DirectionalLightNode()
 		: SceneNode("directional light"), properties{} {
-		properties.direction = dir;
+		properties.direction = DEFAULT_DIRECTION;
 	}
 	virtual ~DirectionalLightNode() = default;
 
