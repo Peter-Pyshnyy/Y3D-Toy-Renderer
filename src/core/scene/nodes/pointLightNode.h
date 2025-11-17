@@ -22,7 +22,7 @@ public:
 	}
 
 	void updateProperties() {
-		properties.position = worldMatrix * glm::vec4(transform.position, 1.0f);
+		properties.position = glm::vec3(worldMatrix[3]); // extracts translation
 	}
 
 	void submit(Renderer& renderer) const override {

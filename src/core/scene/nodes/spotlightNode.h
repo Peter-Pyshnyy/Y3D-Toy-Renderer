@@ -25,9 +25,16 @@ public:
 	}
 
 	void updateProperties() {
-		glm::mat4 dirTransform = glm::transpose(glm::inverse(worldMatrix));
-		properties.position = (worldMatrix * glm::vec4(transform.position, 1.0f));
-		properties.direction = glm::normalize(dirTransform * glm::vec4(DEFAULT_SPOTLIGHT_DIRECTION, 0.0f));
+		properties.position = glm::vec3(worldMatrix[3]); // extracts translation
+
+		// cancel out scaling
+		glm::mat3 basis(worldMatrix);
+		basis[0] = glm::normalize(basis[0]);
+		basis[1] = glm::normalize(basis[1]);
+		basis[2] = glm::normalize(basis[2]);
+		properties.direction = glm::normalize(basis * DEFAULT_SPOTLIGHT_DIRECTION);
+
+
 	}
 
 	void submit(Renderer& renderer) const override {

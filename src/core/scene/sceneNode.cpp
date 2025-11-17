@@ -17,7 +17,6 @@ void SceneNode::addChild(std::unique_ptr<SceneNode> child) {
         child->parent = this;
         children.emplace_back(std::move(child));
 		children.back()->propagateDirty();
-		children.back()->updateWorldTransform(worldMatrix);
     }
 }
 

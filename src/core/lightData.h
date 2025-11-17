@@ -28,6 +28,6 @@ struct Spotlight {
 	glm::vec3 specular{ DEFAULT_SPECULAR };
 	glm::vec3 position;
 	glm::vec3 direction;
-	float cutOff{ 5.0f };      // in degrees
-	float outerCutOff{ 6.5f }; // in degrees
+	float cutOff{ 12.0f };      // in degrees
+	float outerCutOff{ 14.5f }; // in degrees
 };

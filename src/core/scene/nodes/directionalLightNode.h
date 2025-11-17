@@ -23,8 +23,11 @@ public:
 	}
 
 	void updateProperties() {
-		glm::mat4 dirTransform = glm::transpose(glm::inverse(worldMatrix));
-		properties.direction = glm::normalize(dirTransform * glm::vec4(DEFAULT_DIRECTION, 0.0f));
+		glm::mat3 basis(worldMatrix);
+		basis[0] = glm::normalize(basis[0]);
+		basis[1] = glm::normalize(basis[1]);
+		basis[2] = glm::normalize(basis[2]);
+		properties.direction = glm::normalize(basis * DEFAULT_DIRECTION);
 	}
 
 	void submit(Renderer& renderer) const override {
