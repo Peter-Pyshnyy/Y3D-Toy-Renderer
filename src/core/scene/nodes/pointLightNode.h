@@ -11,10 +11,13 @@ public:
 	}
 	virtual ~PointLightNode() = default;
 
-	void updateTransform() override {
-		SceneNode::updateTransform();
-		glm::mat4 posTransform = getWorldTransform();
-		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 1.0f));
+	void updateWorldTransform() override {
+		SceneNode::updateWorldTransform();
+		updateProperties();
+	}
+
+	void updateProperties() {
+		properties.position = worldMatrix * glm::vec4(transform.position, 1.0f);
 	}
 
 	void submit(Renderer& renderer) const override {

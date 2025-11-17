@@ -11,8 +11,8 @@ public:
 	}
 	virtual ~DirectionalLightNode() = default;
 
-	void updateTransform() override {
-		SceneNode::updateTransform();
+	void updateLocalTransform() override {
+		SceneNode::updateLocalTransform();
 		glm::mat4 dirTransform = glm::transpose(glm::inverse(getWorldTransform()));
 		properties.direction = glm::normalize(glm::vec3(dirTransform * glm::vec4(properties.direction, 0.0f)));
 	}

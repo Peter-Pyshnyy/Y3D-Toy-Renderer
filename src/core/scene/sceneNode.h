@@ -45,5 +45,7 @@ public:
 protected:
 	SceneNode* parent;
 	glm::mat4 modelMatrix;
-	virtual void updateTransform();
+	glm::mat4 worldMatrix;
+	virtual void updateLocalTransform();
+	virtual void updateWorldTransform();
 };

@@ -55,17 +55,17 @@ void SceneNode::setModelMatrix(const glm::mat4& matrix) {
 
 void SceneNode::translate(const glm::vec3& delta) {
     transform.position = transform.position + delta;
-    updateTransform();
+    updateLocalTransform();
 }
 
 void SceneNode::rotate(const glm::vec3& euler) {
 	transform.rotation = transform.rotation + euler;
-    updateTransform();
+    updateLocalTransform();
 }
 
 void SceneNode::scale(const glm::vec3& scaleFactor) {
     transform.scale = transform.scale * scaleFactor;
-    updateTransform();
+    updateLocalTransform();
 }
 
 glm::mat4 SceneNode::getLocalTransform() const {
@@ -81,7 +81,7 @@ glm::mat4 SceneNode::getWorldTransform() const {
     }
 }
 
-void SceneNode::updateTransform() {
+void SceneNode::updateLocalTransform() {
     glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
     glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), glm::radians(transform.rotation.x), glm::vec3(1, 0, 0));
     glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), glm::radians(transform.rotation.y), glm::vec3(0, 1, 0));
@@ -89,6 +89,20 @@ void SceneNode::updateTransform() {
     glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+	updateWorldTransform();
+}
+
+// propagate world transform update to children
+void SceneNode::updateWorldTransform() {
+	worldMatrix = getWorldTransform();
+
+    if (children.empty()) {
+        return;
+	}
+
+    for (auto& child : children) {
+        child->updateWorldTransform();
+	}
 }
 
 void SceneNode::submit(Renderer& renderer) const {}

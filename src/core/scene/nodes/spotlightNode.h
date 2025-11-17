@@ -12,8 +12,8 @@ public:
 	}
 	virtual ~SpotlightNode() = default;
 
-	void updateTransform() override {
-		SceneNode::updateTransform();
+	void updateLocalTransform() override {
+		SceneNode::updateLocalTransform();
 		glm::mat4 posTransform = getWorldTransform();
 		glm::mat4 dirTransform = glm::transpose(glm::inverse(posTransform));
 		properties.position = glm::vec3(posTransform * glm::vec4(properties.position, 1.0f));
