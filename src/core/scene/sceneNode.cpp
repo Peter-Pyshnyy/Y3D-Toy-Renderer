@@ -4,14 +4,11 @@
 #include "../renderer.h"
 
 SceneNode::SceneNode(const std::string& name)
-    : name(name), parent(nullptr), children(), modelMatrix(1.0f), transform()
+    : name(name), parent(nullptr), children(), modelMatrix(1.0f), worldMatrix(1.0f), transform()
 {
 }
 
 SceneNode::~SceneNode() {
-	for (auto&& child : children) {
-		child.release();
-	}
 	parent = nullptr;
 }
 
@@ -19,6 +16,8 @@ void SceneNode::addChild(std::unique_ptr<SceneNode> child) {
     if (child) {
         child->parent = this;
         children.emplace_back(std::move(child));
+		children.back()->propagateDirty();
+		children.back()->updateWorldTransform(worldMatrix);
     }
 }
 
@@ -73,11 +72,13 @@ glm::mat4 SceneNode::getLocalTransform() const {
 }
 
 glm::mat4 SceneNode::getWorldTransform() const {
-    if (parent) {
-        return parent->getWorldTransform() * modelMatrix;
-    }
-    else {
-        return modelMatrix;
+	return worldMatrix;
+}
+
+void SceneNode::propagateDirty() {
+    dirty = true;
+    for (auto& child : children) {
+        child->propagateDirty();
     }
 }
 
@@ -89,19 +90,22 @@ void SceneNode::updateLocalTransform() {
     glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-	updateWorldTransform();
+	propagateDirty();
 }
 
 // propagate world transform update to children
-void SceneNode::updateWorldTransform() {
-	worldMatrix = getWorldTransform();
+void SceneNode::updateWorldTransform(const glm::mat4& parentsWorld) {
+    if (dirty){
+	    worldMatrix = parentsWorld * modelMatrix;
+		dirty = false;
+    }
 
     if (children.empty()) {
         return;
 	}
 
     for (auto& child : children) {
-        child->updateWorldTransform();
+        child->updateWorldTransform(worldMatrix);
 	}
 }
 

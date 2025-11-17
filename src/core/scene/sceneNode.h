@@ -9,7 +9,7 @@ class Renderer;
 // added to ensure correct transformation order on update
 struct Transform {
 	glm::vec3 position;
-	glm::vec3 rotation; // Euler angles in radians
+	glm::vec3 rotation; // Euler angles in angles
 	glm::vec3 scale;
 
 	Transform(const glm::vec3& pos = glm::vec3(0.0f), 
@@ -39,13 +39,15 @@ public:
 	void scale(const glm::vec3& factor);
 	glm::mat4 getLocalTransform() const;
 	glm::mat4 getWorldTransform() const;
+	virtual void updateWorldTransform(const glm::mat4& parentsWorld);
 
 	virtual void submit(Renderer& renderer) const;
 	std::vector<std::unique_ptr<SceneNode>> children;
 protected:
+	bool dirty = true;
 	SceneNode* parent;
 	glm::mat4 modelMatrix;
 	glm::mat4 worldMatrix;
+	void propagateDirty();
 	virtual void updateLocalTransform();
-	virtual void updateWorldTransform();
 };
