@@ -127,7 +127,7 @@ int main() {
 	pl->rotate(glm::vec3(0.0f, 180.0f, 0.0f));
 
 	cubeNode->translate(glm::vec3(0.0f, 0.0f, -4.0f));
-	cubeNode->scale(glm::vec3(0.3f));
+	cubeNode->scale(0.3f);
 	pl->translate(glm::vec3(1.0f, 0.0f, 1.0f));
 
 	cubeNode->addChild(std::move(pl));
@@ -150,8 +150,8 @@ int main() {
 		float currentFrame = glfwGetTime();
 		float deltaTime = currentFrame - lastFrame;
 
-		//scene.getRoot()->getChild(0)->getChild(0)->rotate(glm::vec3(0.0f, 15.0f * deltaTime, 0.0f));
-		scene.getRoot()->getChild(0)->getChild(1)->rotate(glm::vec3(0.0f, 25.0f * deltaTime, 0.0f));
+		scene.getRoot()->getChild(0)->getChild(0)->rotate(glm::vec3(0.0f, 15.0f * deltaTime, 0.0f));
+		//scene.getRoot()->getChild(0)->getChild(1)->rotate(glm::vec3(0.0f, 25.0f * deltaTime, 0.0f));
 		scene.submit(renderer);
 		
 		camera.move(deltaTime);

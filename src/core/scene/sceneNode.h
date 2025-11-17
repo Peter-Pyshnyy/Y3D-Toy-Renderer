@@ -10,11 +10,11 @@ class Renderer;
 struct Transform {
 	glm::vec3 position;
 	glm::vec3 rotation; // Euler angles in angles
-	glm::vec3 scale;
+	float scale;
 
 	Transform(const glm::vec3& pos = glm::vec3(0.0f), 
 	          const glm::vec3& rot = glm::vec3(0.0f), 
-	          const glm::vec3& scl = glm::vec3(1.0f))
+			  float scl = 1.0f)
 	    : position(pos), rotation(rot), scale(scl) {}
 };
 
@@ -36,7 +36,7 @@ public:
 	void setModelMatrix(const glm::mat4& matrix);
 	void translate(const glm::vec3& delta);
 	void rotate(const glm::vec3& euler);
-	void scale(const glm::vec3& factor);
+	void scale(float factor);
 	glm::mat4 getLocalTransform() const;
 	glm::mat4 getWorldTransform() const;
 	virtual void updateWorldTransform(const glm::mat4& parentsWorld);

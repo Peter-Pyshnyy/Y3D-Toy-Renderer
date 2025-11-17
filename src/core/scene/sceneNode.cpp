@@ -61,7 +61,7 @@ void SceneNode::rotate(const glm::vec3& euler) {
     updateLocalTransform();
 }
 
-void SceneNode::scale(const glm::vec3& scaleFactor) {
+void SceneNode::scale(float scaleFactor) {
     transform.scale = transform.scale * scaleFactor;
     updateLocalTransform();
 }
@@ -87,7 +87,7 @@ void SceneNode::updateLocalTransform() {
     glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), glm::radians(transform.rotation.y), glm::vec3(0, 1, 0));
     glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), glm::radians(transform.rotation.z), glm::vec3(0, 0, 1));
     glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;
-    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
+    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(transform.scale));
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 	propagateDirty();
 }
