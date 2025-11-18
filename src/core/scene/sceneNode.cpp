@@ -49,6 +49,7 @@ SceneNode* SceneNode::getParent() const {
 
 void SceneNode::setModelMatrix(const glm::mat4& matrix) {
     modelMatrix = matrix;
+	propagateDirty();
 }
 
 void SceneNode::translate(const glm::vec3& delta) {

@@ -119,6 +119,7 @@ int main() {
 	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
 
 	std::unique_ptr<ModelNode> modelNode = std::make_unique<ModelNode>("test", backpackModel);
+	std::unique_ptr<ModelNode> modelNode2 = std::make_unique<ModelNode>("test2", backpackModel);
 	std::unique_ptr<PrimitiveNode> cubeNode = std::make_unique<PrimitiveNode>("cube");
 	std::unique_ptr<SpotlightNode> pl = std::make_unique<SpotlightNode>("spotlight");
 	std::unique_ptr<DirectionalLightNode> dl = std::make_unique<DirectionalLightNode>();
@@ -139,6 +140,11 @@ int main() {
 
 	scene.getRoot()->addChild(std::move(modelNode));
 
+	modelNode2->translate(glm::vec3(1.0f, 0.0f, 0.0f));
+	modelNode2->scale(0.25f);
+
+	scene.getRoot()->addChild(std::move(modelNode2));
+
 	scene.submit(renderer);
 #pragma endregion
 
@@ -151,7 +157,7 @@ int main() {
 		float deltaTime = currentFrame - lastFrame;
 
 		scene.getRoot()->getChild(0)->getChild(0)->rotate(glm::vec3(0.0f, 15.0f * deltaTime, 0.0f));
-		//scene.getRoot()->getChild(0)->getChild(1)->rotate(glm::vec3(0.0f, 25.0f * deltaTime, 0.0f));
+		scene.getRoot()->getChild(1)->rotate(glm::vec3(0.0f, -30.0f * deltaTime, 0.0f));
 		scene.submit(renderer);
 		
 		camera.move(deltaTime);

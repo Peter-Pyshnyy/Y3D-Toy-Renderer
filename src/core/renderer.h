@@ -23,12 +23,14 @@ struct FrameData {
 struct DrawList {
     struct ModelEntry {
         const Model* model;
-        glm::mat4 transform;
+        glm::mat4 modelMatrix;
+		glm::mat4 normalMatrix;
     };
 
     struct PrimitiveEntry {
         const Primitive* primitive;
-        glm::mat4 transform;
+        glm::mat4 modelMatrix;
+        glm::mat4 normalMatrix;
     };
 
     std::vector<ModelEntry> models;
@@ -57,24 +59,21 @@ public:
 
     void addModel(const std::string& name);
     void addPrimitive(Primitive&& primitive);
-	void useShader(ShaderType type);
-    void useShader(Shader& shader);
-	void submit(const Model& model, const glm::mat4& transform); // model submission
-	void submit(const Primitive& primitive, const glm::mat4& transform); // primitive submission
+	void submit(const Model& model, const glm::mat4& transform, const glm::mat4& normalMatrix); // model submission
+	void submit(const Primitive& primitive, const glm::mat4& transform, const glm::mat4& normalMatrix); // primitive submission
 	void submit(const DirectionalLight& l); // directional light submission
 	void submit(const PointLight& l); // point light submission
 	void submit(const Spotlight& l); // spotlight submission
-    void clearDrawList();
 private:
     int width, height;
-    Shader* activeShader;
     std::vector<Model> models;
     std::vector<Primitive> primitives;
 	std::map<ShaderType, Shader> shaders;
 	DrawList drawList;
     void setupShaders();
-    void updateShaderLights();
-	void setUniforms(const FrameData& frame, const glm::mat4& pos = glm::mat4(1.0f));
+    void updateShaderLights(Shader& shader);
+	void setUniforms(Shader& shader, const FrameData& frame, const glm::mat4& model = glm::mat4(1.0f), 
+        const glm::mat4& normal = glm::mat4(1.0f));
     void drawModels(const FrameData& frame);
     void drawPrimitives(const FrameData& frame);
 };

@@ -22,7 +22,7 @@ struct Shader
 
 	GLuint getUniformLocation(const char* name);
 
-	//https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader.h
+	//modified https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader.h
 	void setBool(const std::string& name, bool value) const;
 	void setInt(const std::string& name, int value) const;
 	void setFloat(const std::string& name, float value) const;

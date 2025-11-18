@@ -16,7 +16,6 @@ Renderer::~Renderer() {
     for (auto& [type, shader] : shaders) {
         shader.clear();
     }
-	activeShader = nullptr;
 }
 
 void Renderer::init() {
@@ -29,24 +28,10 @@ void Renderer::setupShaders() {
     std::filesystem::path vert = std::filesystem::path(SHADER_DIR) / "default.vert";
     std::filesystem::path frag = std::filesystem::path(SHADER_DIR) / "default.frag";
     shaders[ShaderType::Default] = Shader(vert.string().c_str(), frag.string().c_str());
-    glLinkProgram(shaders[ShaderType::Default].id);
 
 	vert = std::filesystem::path(SHADER_DIR) / "primitive.vert";
 	frag = std::filesystem::path(SHADER_DIR) / "primitive.frag";
 	shaders[ShaderType::Primitive] = Shader(vert.string().c_str(), frag.string().c_str());
-	glLinkProgram(shaders[ShaderType::Primitive].id);
-
-    useShader(ShaderType::Default);
-}
-
-void Renderer::useShader(ShaderType type) {
-    activeShader = &shaders[type];  
-    activeShader->bind();
-}
-
-void Renderer::useShader(Shader& shader) {
-	activeShader = &shader;
-	activeShader->bind();
 }
 
 void Renderer::addModel(const std::string& name) {
@@ -59,20 +44,20 @@ void Renderer::addPrimitive(Primitive&& primitive) {
     primitives.push_back(std::move(primitive));
 }
 
-void Renderer::updateShaderLights() {
+void Renderer::updateShaderLights(Shader& shader) {
     if (drawList.hasDirectionalLight) {
-        activeShader->setDirectionalLight(drawList.directionalLight);
+        shader.setDirectionalLight(drawList.directionalLight);
     }
 
     for (std::size_t i = 0; i < drawList.pointLights.size(); i++) {
-        activeShader->setPointLight(drawList.pointLights[i], i);
+        shader.setPointLight(drawList.pointLights[i], i);
 	}
 
     for (std::size_t i = 0; i < drawList.spotlights.size(); i++) {
-        activeShader->setSpotlight(drawList.spotlights[i], i);
+        shader.setSpotlight(drawList.spotlights[i], i);
 	}
 
-    activeShader->setuVec3("lightCount", glm::uvec3(
+    shader.setuVec3("lightCount", glm::uvec3(
         static_cast<unsigned int>(drawList.hasDirectionalLight),
         drawList.pointLights.size(),
         drawList.spotlights.size()
@@ -80,24 +65,24 @@ void Renderer::updateShaderLights() {
 }
 
 // assumes shader is already bound
-void Renderer::setUniforms(const FrameData& frame, const glm::mat4& model) {
-    activeShader->setMat4("u_proj", frame.projection);
-    activeShader->setMat4("u_view", frame.camera.getWorldToViewMatrix());
-    activeShader->setMat4("u_model", model);
-	activeShader->setMat4("u_normalMatrix", glm::transpose(glm::inverse(model)));
-    activeShader->setVec3("u_viewPos", frame.camera.getPosition());
-    activeShader->setFloat("u_time", frame.time);
-    updateShaderLights();
+void Renderer::setUniforms(Shader& shader, const FrameData& frame, const glm::mat4& model, const glm::mat4& normal) {
+    shader.setMat4("u_proj", frame.projection);
+    shader.setMat4("u_view", frame.camera.getWorldToViewMatrix());
+    shader.setMat4("u_model", model);
+	shader.setMat4("u_normalMatrix", normal);
+    shader.setVec3("u_viewPos", frame.camera.getPosition());
+    shader.setFloat("u_time", frame.time);
+    updateShaderLights(shader);
 }
 
 // model submission
-void Renderer::submit(const Model& model, const glm::mat4& transform) {
-	drawList.models.push_back({ &model, transform });
+void Renderer::submit(const Model& model, const glm::mat4& modelMatrix, const glm::mat4& normalMatrix) {
+	drawList.models.push_back({ &model, modelMatrix, normalMatrix });
 }
 
 // primitive submission
-void Renderer::submit(const Primitive& primitive, const glm::mat4& transform) {
-	drawList.primitives.push_back({ &primitive, transform });
+void Renderer::submit(const Primitive& primitive, const glm::mat4& modelMatrix, const glm::mat4& normalMatrix) {
+	drawList.primitives.push_back({ &primitive, modelMatrix, normalMatrix });
 }
 
 // directional light submission
@@ -108,32 +93,38 @@ void Renderer::submit(const DirectionalLight& l) {
 
 // point light submission
 void Renderer::submit(const PointLight& l) {
+    if (drawList.pointLights.size() >= MAX_POINTLIGHTS) {
+        std::cout << "Warning: Maximum number of point lights reached. Ignoring additional point light submission." << std::endl;
+        return;
+	}
     drawList.pointLights.push_back(l);
 }
 
 // spotlight submission
 void Renderer::submit(const Spotlight& l) {
+    if (drawList.spotlights.size() >= MAX_SPOTLIGHTS) {
+        std::cout << "Warning: Maximum number of spotlights reached. Ignoring additional spotlight submission." << std::endl;
+        return;
+    }
     drawList.spotlights.push_back(l);
 }
 
 void Renderer::drawModels(const FrameData& frame) {
-    useShader(ShaderType::Default);
+    Shader& shader = shaders[ShaderType::Default];
+    shader.bind();
     for (const DrawList::ModelEntry& modelEntry : drawList.models) {
-        setUniforms(frame, modelEntry.transform);
-        modelEntry.model->Draw(shaders[ShaderType::Default]);
+        setUniforms(shader, frame, modelEntry.modelMatrix, modelEntry.normalMatrix);
+        modelEntry.model->Draw(shader);
     }
 }
 
 void Renderer::drawPrimitives(const FrameData& frame) {
-    useShader(ShaderType::Primitive);
+    Shader& shader = shaders[ShaderType::Primitive];
+    shader.bind();
     for (const DrawList::PrimitiveEntry& primitiveEntry : drawList.primitives) {
-        setUniforms(frame, primitiveEntry.transform);
-        primitiveEntry.primitive->Draw(shaders[ShaderType::Primitive]);
+        setUniforms(shader, frame, primitiveEntry.modelMatrix, primitiveEntry.normalMatrix);
+        primitiveEntry.primitive->Draw(shader);
     }
-}
-
-void Renderer::clearDrawList() {
-	drawList.clear();
 }
 
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
@@ -149,4 +140,5 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
 
     drawPrimitives(frame);
     drawModels(frame);
+	drawList.clear();
 }

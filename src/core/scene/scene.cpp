@@ -18,7 +18,6 @@ Scene& Scene::operator=(Scene&& other) noexcept {
 
 void Scene::submit(Renderer& renderer) const {
 	root->updateWorldTransform(glm::mat4(1.0f)); // update world transforms
-	renderer.clearDrawList(); //remove later
 	submitRecursive(*root, renderer);
 }
 
