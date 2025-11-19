@@ -34,6 +34,25 @@ target_include_directories(glad PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/glad
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE external/stb)
 
+# ImGui
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+
+add_library(imgui STATIC
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui PUBLIC
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+)
+
+target_link_libraries(imgui PRIVATE glfw glad)
+
 # Assimp
 FetchContent_Declare(
   assimp
@@ -57,6 +76,7 @@ target_link_libraries(${PROJECT_NAME}
     glm::glm
     stb_image
     assimp
+    imgui
     opengl32 
 )
 
