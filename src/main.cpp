@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <imgui.h>
 #include <iostream>
 #include <memory>
 #include <filesystem>
@@ -17,6 +18,8 @@
 #include "core/scene/nodes/emptyNode.h"
 #include "geometry/primitive.h"
 #include "core/camera.h"
+
+#include "ui/ui.h"
 
 GLuint width = 1280;
 GLuint height = 720;
@@ -110,6 +113,8 @@ int main() {
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+
+	UI ui(window);
 #pragma endregion
 
 #pragma region renderer
@@ -163,6 +168,15 @@ int main() {
 		camera.move(deltaTime);
 		renderer.renderFrame(camera, glfwGetTime(), deltaTime);
 		lastFrame = currentFrame;
+
+		ui.begin();
+
+		ImGui::Begin("Test");
+		ImGui::Text("Hello hello, I'm Peter");
+		ImGui::End();
+
+		ui.end();
+
 		glfwSwapBuffers(window); //presents the contents of an internel buffer to the screen
 		glfwPollEvents(); //window event hanlder
 	}
