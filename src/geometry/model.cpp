@@ -97,6 +97,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
         material->Get(AI_MATKEY_SHININESS, shininess);
+        if (shininess <= 0.0f) {
+            shininess = 32.0f;
+		}
     }
 	return Mesh(vertices, indices, textures);
 }

@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <iostream>
 
-Primitive::Primitive(PrimitiveType type, glm::vec3& color, float scaleX, float scaleY, float scaleZ)
+Primitive::Primitive(PrimitiveType type, float scaleX, float scaleY, float scaleZ, glm::vec3& color)
     : Mesh(), type(type), color(color) {
     this->vertices = generateVertices(type, scaleX, scaleY, scaleZ);
 	this->indices = generateIndices(type, scaleX, scaleZ);
@@ -11,7 +11,7 @@ Primitive::Primitive(PrimitiveType type, glm::vec3& color, float scaleX, float s
     setupMesh();
 }
 
-Primitive::Primitive(PrimitiveType type, glm::vec3& color, float scale)
+Primitive::Primitive(PrimitiveType type, float scale, glm::vec3& color)
 : Mesh(), type(type), color(color) {
     this->vertices = generateVertices(type, scale, scale, scale);
     this->indices = generateIndices(type, scale, scale);

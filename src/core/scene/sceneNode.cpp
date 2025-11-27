@@ -57,6 +57,7 @@ void SceneNode::translate(const glm::vec3& delta) {
     updateLocalTransform();
 }
 
+// in world space
 void SceneNode::rotate(const glm::vec3& euler) {
 	transform.rotation = transform.rotation + euler;
     updateLocalTransform();

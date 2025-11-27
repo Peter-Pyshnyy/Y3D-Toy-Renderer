@@ -82,8 +82,6 @@ void main()
     color = pow(color, vec3(1.0/2.2)); //gamma correction
 
     FragColor = vec4(color, 1.0);
-
-    //FragColor = vec4(vec3(linearizeDepth(gl_FragCoord.z)), 1.0);
 }
 
 vec3 phong(LightComps multipliers, vec3 normal, vec3 viewDir, vec3 lightDir) {
