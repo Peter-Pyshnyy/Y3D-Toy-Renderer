@@ -120,42 +120,38 @@ int main() {
 #pragma region renderer
 	renderer.init();
 
-	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("BrandenburgGate/BrandenburgGate.obj");
+	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("LibertyStatue/LibertStatue.obj");
 	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
 	std::unique_ptr<ModelNode> modelNode = std::make_unique<ModelNode>("model", backpackModel);
 
-	/*std::unique_ptr<ModelNode> modelNode2 = std::make_unique<ModelNode>("test2", backpackModel);
-	std::unique_ptr<PrimitiveNode> cubeNode = std::make_unique<PrimitiveNode>("cube");
-	std::unique_ptr<SpotlightNode> pl = std::make_unique<SpotlightNode>("spotlight");
-	std::unique_ptr<DirectionalLightNode> dl = std::make_unique<DirectionalLightNode>();
-	std::unique_ptr<SceneNode> emptyNode = std::make_unique<SceneNode>("empty");
+	std::shared_ptr<Primitive> superCubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(11.f, 57.f, 84.f) / 255.0f);
+	std::unique_ptr<PrimitiveNode> superCube = std::make_unique<PrimitiveNode>("cube", superCubePrim);
+	float halfPi = 3.14159265f / 2.0;
+	for (int i = 0; i < 4; i++) {
+		std::shared_ptr<Primitive> cubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(11.f, 57.f, 84.f) / 255.0f);
+		std::unique_ptr<PrimitiveNode> cube1 = std::make_unique<PrimitiveNode>("cube", cubePrim);
+		cube1->scale(0.5f);
+		cube1->translate(glm::vec3(2.0f * round(cos(halfPi * i)), 0.0f, 2.0f * round(sin(halfPi * i))));
+		superCube->addChild(std::move(cube1));
+	}
 
-	pl->rotate(glm::vec3(0.0f, 180.0f, 0.0f));
+	for (int i = 0; i < 2; i++) {
+		std::shared_ptr<Primitive> cubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(11.f, 57.f, 84.f) / 255.0f);
+		std::unique_ptr<PrimitiveNode> cube1 = std::make_unique<PrimitiveNode>("cube", cubePrim);
+		cube1->scale(0.5f);
+		cube1->translate(glm::vec3(0.0f, 2.0f * (i * 2.0f - 1.0f), 0.0f));
+		superCube->addChild(std::move(cube1));
+	}
 
-	cubeNode->translate(glm::vec3(0.0f, 0.0f, -4.0f));
-	cubeNode->scale(0.3f);
-	pl->translate(glm::vec3(1.0f, 0.0f, 1.0f));
-
-	cubeNode->addChild(std::move(pl));
-
-	emptyNode->addChild(std::move(cubeNode));
-	modelNode->addChild(std::move(emptyNode));
-	dl->rotate(glm::vec3(45.0f, 0.0f, 0.0f));
-	modelNode->addChild(std::move(dl));
-
-	scene.getRoot()->addChild(std::move(modelNode));
-
-	modelNode2->translate(glm::vec3(1.0f, 0.0f, 0.0f));
-	modelNode2->scale(0.25f);
-
-	scene.getRoot()->addChild(std::move(modelNode2));*/
+	superCube->translate(glm::vec3(-5.0f, 2.5f, -2.0f));
+	superCube->scale(0.5f);
 
 	std::shared_ptr<Primitive> plane = std::make_shared<Primitive>(PrimitiveType::Plane, 10.0f);
 	std::unique_ptr<PrimitiveNode> floorNode = std::make_unique<PrimitiveNode>("plane", plane);
 	floorNode->translate(glm::vec3(0.0f, -1.0f, 0.0f));
 
-	modelNode->rotate(glm::vec3(0.0f, 0.0f, 0.0f));
-	modelNode->scale(1.75f);
+	modelNode->translate(glm::vec3(0.0f, -1.0f, 0.0f));
+	modelNode->scale(3.75f);
 
 	std::unique_ptr<SceneNode> lightHolder = std::make_unique<SceneNode>("light holder");
 
@@ -164,12 +160,14 @@ int main() {
 
 		std::unique_ptr<SpotlightNode> spotlightNode = std::make_unique<SpotlightNode>("spotlight");
 		spotlightNode->rotate(glm::vec3(-90.0f, 0.0f, 0.0f));
-		spotlightNode->translate(glm::vec3(i*1.25, 1.0f + i * 0.25f, i * 0.6f));
+		spotlightNode->translate(glm::vec3(cos(i) * 2.0f, 0.5f + i * 0.2f, sin(i) * 2.0f));
 
 		emptyNode->addChild(std::move(spotlightNode));
 		emptyNode->translate(glm::vec3(i * 0.3));
 		lightHolder->addChild(std::move(emptyNode));
 	}
+
+	lightHolder->translate(glm::vec3(5.0f, 0.0f, 0.0f));
 
 	std::unique_ptr<DirectionalLightNode> dirLightNode = std::make_unique<DirectionalLightNode>();
 
@@ -177,6 +175,7 @@ int main() {
 	scene.getRoot()->addChild(std::move(lightHolder));
 	scene.getRoot()->addChild(std::move(modelNode));
 	scene.getRoot()->addChild(std::move(dirLightNode));
+	scene.getRoot()->addChild(std::move(superCube));
 	scene.submit(renderer);
 #pragma endregion
 
@@ -189,13 +188,9 @@ int main() {
 		float deltaTime = currentFrame - lastFrame;
 
 		//scene.getRoot()->getChild(0)->getChild(0)->rotate(glm::vec3(0.0f, 15.0f * deltaTime, 0.0f));
-		scene.getRoot()->getChild(1)->rotate(glm::vec3(0.0f, -30.0f * deltaTime, 0.0f));
+		//scene.getRoot()->getChild(1)->rotate(glm::vec3(0.0f, -30.0f * deltaTime, 0.0f));
 
-		for (int i = 0; i < 5; i++) {
-			scene.getRoot()->getChild(1)->getChild(i)->rotate(glm::vec3(0.0f, i * 0.5 * 60.0f * deltaTime, 0.0f));
-		}
-
-		scene.getRoot()->getChild(2)->rotate(glm::vec3(0.0f, -10.0f * deltaTime, 0.0f));
+		scene.getRoot()->getChild(4)->rotate(glm::vec3(20.0f * deltaTime, -30.0f * deltaTime, 0.0f));
 
 		scene.submit(renderer);
 		

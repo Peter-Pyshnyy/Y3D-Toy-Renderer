@@ -44,7 +44,7 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[MAX_POINTLIGHTS];
 uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform uvec3 lightCount;
-float shininess = 0; // maybe make a uniform later
+float shininess = 32; // maybe make a uniform later
 vec3 diffColor;
 vec3 phong(LightComps multipliers, vec3 normal, vec3 viewDir, vec3 lightDir);
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
