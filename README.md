@@ -1,5 +1,7 @@
 A personal OpenGL renderer built for learning and experimenting with modern graphics techniques, rendering algorithms, and engine architecture concepts.
-The goal of this project is to explore rendering pipelines, shader systems, and performance optimizations in a hands-on way.
+
+<img width="1265" height="703" alt="image" src="https://github.com/user-attachments/assets/39b43bfb-f524-4141-84da-7c785f327771" />
+
 
 **Building Notes**
 
@@ -7,4 +9,16 @@ The goal of this project is to explore rendering pipelines, shader systems, and 
 - On some machines running Visual Studio, the project may fail to configure or build properly unless the CMake generator is explicitly set to "Visual Studio 17 2022 Win64"
 - Expect the first compilation to take longer
 
-_work in progress..._
+**Features**
+
+- Modular architecture
+- Multi-shader pipeline
+- Model loading
+- Hierarchical scene graph with transform propagation
+- Scene nodes include: multiple light types, 3d models, procedurally generated geometry
+
+**Soon to be added**
+
+- Scene saving/loading via JSON
+- GUI
+- More complex lighting system
