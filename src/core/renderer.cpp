@@ -24,6 +24,47 @@ void Renderer::init() {
     setupShaders();
 }
 
+void Renderer::createFramebuffer(int w, int h) {
+	glDeleteFramebuffers(1, &fbo);
+	glDeleteTextures(1, &colorTex);
+	glDeleteRenderbuffers(1, &depthRBO);
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	// create a new texture to render to and bind it
+	glGenTextures(1, &colorTex);
+	glBindTexture(GL_TEXTURE_2D, colorTex);
+
+	// allocate space for texture with given size
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// attach texture to framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTex, 0);
+
+	// depth buffer
+	glGenRenderbuffers(1, &depthRBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRBO);
+
+	// allocate storage for depth+stencil data at given size
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
+
+	// attach depth buffer to framebuffer as depth+stencil target
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthRBO);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        return;
+    }
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	width = w;
+	height = h;
+}
+
 void Renderer::setupShaders() {
     std::filesystem::path vert = std::filesystem::path(SHADER_DIR) / "default.vert";
     std::filesystem::path frag = std::filesystem::path(SHADER_DIR) / "default.frag";
@@ -128,7 +169,14 @@ void Renderer::drawPrimitives(const FrameData& frame) {
 }
 
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	// clear default framebuffer (not used currently)
+	/*glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
+
+	// render to custom framebuffer (imgui viewport texture)
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     FrameData frame{
@@ -137,8 +185,10 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
         time,
         deltaTime
     };
-
+	glm::vec2 testSize = glm::vec2(width, height);
     drawPrimitives(frame);
     drawModels(frame);
 	drawList.clear();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <iostream>
 #include <memory>
 #include <filesystem>
@@ -28,11 +29,29 @@ Camera camera;
 Renderer renderer(width, height);
 Scene scene;
 
+bool lookAround = false;
 float lastFrame = 0.0f;
 
 #pragma region callbacks
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	if (!lookAround) return;
 	camera.mouseUpdate(glm::vec2(xpos, ypos));
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		lookAround = true;
+	}
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		lookAround = false;
+	}
+}
+
+void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	if (!lookAround) return;
+	camera.zoom(yoffset);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -87,10 +106,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 	}
 }
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	camera.zoom(yoffset);
-}
 #pragma endregion
 
 int main() {
@@ -109,10 +124,11 @@ int main() {
 		return 1;
 	}
 	enableReportGlErrors();
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetScrollCallback(window, mouse_scroll_callback);
 
 	UI ui(window);
 #pragma endregion
@@ -124,11 +140,23 @@ int main() {
 	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
 	std::unique_ptr<ModelNode> modelNode = std::make_unique<ModelNode>("model", backpackModel);
 
-	std::shared_ptr<Primitive> superCubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(11.f, 57.f, 84.f) / 255.0f);
+	modelNode->translate(glm::vec3(0.0f, -1.0f, 0.0f));
+	modelNode->scale(3.75f);
+
+	std::unique_ptr<PointLightNode> pointLight = std::make_unique<PointLightNode>("point light");
+	pointLight->translate(glm::vec3(-0.225f, 1.4f, 0.25f));
+	modelNode->addChild(std::move(pointLight));
+	pointLight = std::make_unique<PointLightNode>("point light2");
+	pointLight->translate(glm::vec3(-0.225f, 1.4f, 0.25f));
+	pointLight->properties.linear = 0.7f;
+	pointLight->properties.quadratic = 1.8f;
+	modelNode->addChild(std::move(pointLight));
+
+	std::shared_ptr<Primitive> superCubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(255.f, 255.f, 255.f) / 255.0f);
 	std::unique_ptr<PrimitiveNode> superCube = std::make_unique<PrimitiveNode>("cube", superCubePrim);
 	float halfPi = 3.14159265f / 2.0;
 	for (int i = 0; i < 4; i++) {
-		std::shared_ptr<Primitive> cubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(11.f, 57.f, 84.f) / 255.0f);
+		std::shared_ptr<Primitive> cubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(255.f, 10.f, 10.f) / 255.0f);
 		std::unique_ptr<PrimitiveNode> cube1 = std::make_unique<PrimitiveNode>("cube", cubePrim);
 		cube1->scale(0.5f);
 		cube1->translate(glm::vec3(2.0f * round(cos(halfPi * i)), 0.0f, 2.0f * round(sin(halfPi * i))));
@@ -136,7 +164,7 @@ int main() {
 	}
 
 	for (int i = 0; i < 2; i++) {
-		std::shared_ptr<Primitive> cubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(11.f, 57.f, 84.f) / 255.0f);
+		std::shared_ptr<Primitive> cubePrim = std::make_shared<Primitive>(PrimitiveType::Cube, 1.0f, glm::vec3(255.f, 10.f, 10.f) / 255.0f);
 		std::unique_ptr<PrimitiveNode> cube1 = std::make_unique<PrimitiveNode>("cube", cubePrim);
 		cube1->scale(0.5f);
 		cube1->translate(glm::vec3(0.0f, 2.0f * (i * 2.0f - 1.0f), 0.0f));
@@ -146,12 +174,9 @@ int main() {
 	superCube->translate(glm::vec3(-5.0f, 2.5f, -2.0f));
 	superCube->scale(0.5f);
 
-	std::shared_ptr<Primitive> plane = std::make_shared<Primitive>(PrimitiveType::Plane, 10.0f);
+	std::shared_ptr<Primitive> plane = std::make_shared<Primitive>(PrimitiveType::Plane, 10.0f, glm::vec3(0.2f, 1.0f, 0.35f));
 	std::unique_ptr<PrimitiveNode> floorNode = std::make_unique<PrimitiveNode>("plane", plane);
 	floorNode->translate(glm::vec3(0.0f, -1.0f, 0.0f));
-
-	modelNode->translate(glm::vec3(0.0f, -1.0f, 0.0f));
-	modelNode->scale(3.75f);
 
 	std::unique_ptr<SceneNode> lightHolder = std::make_unique<SceneNode>("light holder");
 
@@ -174,8 +199,8 @@ int main() {
 	scene.getRoot()->addChild(std::move(floorNode));
 	scene.getRoot()->addChild(std::move(lightHolder));
 	scene.getRoot()->addChild(std::move(modelNode));
-	scene.getRoot()->addChild(std::move(dirLightNode));
 	scene.getRoot()->addChild(std::move(superCube));
+	scene.getRoot()->addChild(std::move(dirLightNode));
 	scene.submit(renderer);
 #pragma endregion
 
@@ -187,26 +212,76 @@ int main() {
 		float currentFrame = glfwGetTime();
 		float deltaTime = currentFrame - lastFrame;
 
-		//scene.getRoot()->getChild(0)->getChild(0)->rotate(glm::vec3(0.0f, 15.0f * deltaTime, 0.0f));
-		//scene.getRoot()->getChild(1)->rotate(glm::vec3(0.0f, -30.0f * deltaTime, 0.0f));
-
-		scene.getRoot()->getChild(4)->rotate(glm::vec3(20.0f * deltaTime, -30.0f * deltaTime, 0.0f));
+		scene.getRoot()->getChild(3)->rotate(glm::vec3(20.0f * deltaTime, -30.0f * deltaTime, 0.0f));
 
 		scene.submit(renderer);
 		
-		camera.move(deltaTime);
+		if (lookAround) {
+			camera.move(deltaTime);
+		}
+
 		renderer.renderFrame(camera, glfwGetTime(), deltaTime);
 		lastFrame = currentFrame;
 
-		/*ui.begin();
+		ui.begin();
 
-		ImGui::Begin("Test");
-		ImGui::Text("Hello hello, I'm Peter");
+		// sets the window's position to top-left of main window and size to full window size
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+
+		// attach window to main viewport (maybe for future multi-viewport setups?)
+		ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoBringToFrontOnFocus |
+			ImGuiWindowFlags_NoNavFocus;
+
+		ImGui::Begin("RootDockspace", nullptr, flags);
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspace_id);
+
+		static bool first = true;
+		if (first) {
+			first = false;
+
+			ImGui::DockBuilderRemoveNode(dockspace_id);
+			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+			ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
+
+			ImGuiID left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
+			ImGuiID right = dockspace_id;
+
+			ImGui::DockBuilderDockWindow("Inspector", left);
+			ImGui::DockBuilderDockWindow("Viewport", right);
+
+			ImGui::DockBuilderFinish(dockspace_id);
+		}
 		ImGui::End();
 
-		ui.end();*/
+		ImGui::Begin("Inspector");
+		ImGui::Text("test");
+		ImGui::End();
 
-		glfwSwapBuffers(window); //presents the contents of an internel buffer to the screen
+		ImGui::Begin("Viewport");
+		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+
+		// if size changed, update framebuffer size
+		if ((int)viewportSize.x != renderer.width || (int)viewportSize.y != renderer.height) {
+			renderer.createFramebuffer((int)viewportSize.x, (int)viewportSize.y);
+		}
+
+		// draw the texture (note the UVs {0,1} to {1,0} flips vertically)
+		ImGui::Image((ImTextureID)renderer.colorTex, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::End();
+
+		ui.end();
+
+		glfwSwapBuffers(window); //presents the contents of an internal buffer to the screen
 		glfwPollEvents(); //window event hanlder
 	}
 

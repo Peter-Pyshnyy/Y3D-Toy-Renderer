@@ -21,13 +21,20 @@ Camera::Camera() :
 void Camera::mouseUpdate(glm::vec2 newMousePos) {
 	glm::vec2 mouseDelta = newMousePos - oldMousePosition;
 	oldMousePosition = newMousePos;
-	if (glm::length(mouseDelta) > 500.0f) return; // avoid jump on first mouse enter
+	if (glm::length(mouseDelta) > 400.0f) return; // avoid jump on first mouse enter
 
-	cameraRight = glm::normalize(glm::cross(viewDirection, cameraUp));
+	cameraRight = glm::normalize(glm::cross(viewDirection, glm::vec3(0, 1, 0)));
+	cameraUp = glm::normalize(glm::cross(cameraRight, viewDirection));
 
-	glm::mat4 rotator = glm::rotate(glm::mat4(1.0), -mouseDelta.y * SENSITIVITY, cameraRight) * glm::rotate(glm::mat4(1.0), -mouseDelta.x * SENSITIVITY, cameraUp);
+	glm::mat4 rot =
+		glm::rotate(glm::mat4(1.0f), -mouseDelta.y * SENSITIVITY, cameraRight) *
+		glm::rotate(glm::mat4(1.0f), -mouseDelta.x * SENSITIVITY, cameraUp);
 
-	viewDirection = rotator * glm::vec4(viewDirection, 0.0f);
+	viewDirection = glm::normalize(glm::vec3(rot * glm::vec4(viewDirection, 0.0f)));
+
+	// update camera axes, so WASD movement doesn't drift
+	cameraRight = glm::normalize(glm::cross(viewDirection, glm::vec3(0, 1, 0)));
+	cameraUp = glm::normalize(glm::cross(cameraRight, viewDirection));
 }
 
 glm::mat4 Camera::getWorldToViewMatrix() const {
