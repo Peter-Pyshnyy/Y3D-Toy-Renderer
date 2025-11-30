@@ -9,6 +9,9 @@ UI::UI(GLFWwindow* window) : window(window)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
+    ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // enable docking
+
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 }
@@ -25,6 +28,10 @@ void UI::begin()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    // create a docking space over the entire viewport
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(),
+        ImGuiDockNodeFlags_PassthruCentralNode); 
 }
 
 void UI::end()
