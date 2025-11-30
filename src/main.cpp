@@ -29,11 +29,29 @@ Camera camera;
 Renderer renderer(width, height);
 Scene scene;
 
+bool lookAround = false;
 float lastFrame = 0.0f;
 
 #pragma region callbacks
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	if (!lookAround) return;
 	camera.mouseUpdate(glm::vec2(xpos, ypos));
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		lookAround = true;
+	}
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		lookAround = false;
+	}
+}
+
+void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	if (!lookAround) return;
+	camera.zoom(yoffset);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -88,10 +106,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 	}
 }
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	camera.zoom(yoffset);
-}
 #pragma endregion
 
 int main() {
@@ -113,7 +127,8 @@ int main() {
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetScrollCallback(window, mouse_scroll_callback);
 
 	UI ui(window);
 #pragma endregion
@@ -201,7 +216,10 @@ int main() {
 
 		scene.submit(renderer);
 		
-		camera.move(deltaTime);
+		if (lookAround) {
+			camera.move(deltaTime);
+		}
+
 		renderer.renderFrame(camera, glfwGetTime(), deltaTime);
 		lastFrame = currentFrame;
 
