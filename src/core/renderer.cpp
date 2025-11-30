@@ -169,10 +169,10 @@ void Renderer::drawPrimitives(const FrameData& frame) {
 }
 
 void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
-	// clear default framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// clear default framebuffer (not used currently)
+	/*glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
 
 	// render to custom framebuffer (imgui viewport texture)
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
