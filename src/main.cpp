@@ -225,7 +225,7 @@ int main() {
 
 		ui.begin();
 		ui.createDockSpace();
-		ui.createHierarchyWindow();
+		ui.createHierarchyWindow(*scene.getRoot());
 		ui.createViewportWindow(renderer);
 		ui.end();
 

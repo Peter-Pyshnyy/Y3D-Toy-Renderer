@@ -96,8 +96,46 @@ void UI::createViewportWindow(Renderer& renderer) {
 	ImGui::End();
 }
 
-void UI::createHierarchyWindow() {
+void UI::createHierarchyWindow(SceneNode& root) {
 	ImGui::Begin("Hierarchy");
-	ImGui::Text("test");
+	
+	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+	if (ImGui::TreeNodeEx("root", flag)) {
+		for (auto &child : root.children) {
+			recursiveHierarchy(*child);
+		}
+
+		ImGui::TreePop();
+	}
+
+
 	ImGui::End();
+}
+
+void UI::recursiveHierarchy(SceneNode& node) {
+	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
+	if (node.children.empty()) {
+		flag |= ImGuiTreeNodeFlags_Leaf;
+	}
+	else {
+		flag |= ImGuiTreeNodeFlags_OpenOnArrow;
+	}
+	if (&node == selectedNode) {
+		flag |= ImGuiTreeNodeFlags_Selected;
+	}
+
+	// (void*)&node to ensure unique ID (its adress) even with same names
+	// note: TreeNodeEx returns whether node is expanded this frame
+	bool opened = ImGui::TreeNodeEx((void*)&node, flag, node.name.c_str());
+
+	if (ImGui::IsItemClicked()) {
+		selectedNode = &node;
+	}
+
+	if (opened) {
+		for (auto& child : node.children) {
+			recursiveHierarchy(*child);
+		}
+		ImGui::TreePop();
+	}
 }
