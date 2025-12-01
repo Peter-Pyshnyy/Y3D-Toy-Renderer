@@ -9,8 +9,7 @@
 
 constexpr int MAX_POINTLIGHTS = 16;
 constexpr int MAX_SPOTLIGHTS = 16;
-
-Renderer::Renderer(int w, int h) : width(w), height(h) {}
+constexpr float ASPECT_RATIO = 16.0 / 9.0;
 
 Renderer::~Renderer() {
     for (auto& [type, shader] : shaders) {
@@ -61,8 +60,8 @@ void Renderer::createFramebuffer(int w, int h) {
     }
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	width = w;
-	height = h;
+	/*fbWidth = w;
+	fbHeight = h;*/
 }
 
 void Renderer::setupShaders() {
@@ -180,15 +179,18 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     FrameData frame{
-        glm::perspective(glm::radians(camera.getFov()), static_cast<float>(width) / height, 0.1f, 100.0f),
+        glm::perspective(glm::radians(camera.getFov()), ASPECT_RATIO, 0.1f, 100.0f),
         camera,
         time,
         deltaTime
     };
-	glm::vec2 testSize = glm::vec2(width, height);
     drawPrimitives(frame);
     drawModels(frame);
 	drawList.clear();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+float Renderer::getFbAspectRatio() {
+    return static_cast<float>(fbWidth) / fbHeight;
 }

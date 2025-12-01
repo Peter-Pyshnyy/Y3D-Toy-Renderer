@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-//#include <imgui.h>
 
 #include <iostream>
 #include <memory>
@@ -26,31 +25,31 @@ GLuint width = 1280;
 GLuint height = 720;
 GLuint numIndices = 0;
 Camera camera;
-Renderer renderer(width, height);
+Renderer renderer;
 Scene scene;
 
-bool lookAround = false;
+bool cameraMode = false;
 float lastFrame = 0.0f;
 
 #pragma region callbacks
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-	if (!lookAround) return;
+	if (!cameraMode) return;
 	camera.mouseUpdate(glm::vec2(xpos, ypos));
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		lookAround = true;
+		cameraMode = true;
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		lookAround = false;
+		cameraMode = false;
 	}
 }
 
 void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	if (!lookAround) return;
+	if (!cameraMode) return;
 	camera.zoom(yoffset);
 }
 
@@ -131,10 +130,12 @@ int main() {
 	glfwSetScrollCallback(window, mouse_scroll_callback);
 
 	UI ui(window);
+	glfwSetWindowUserPointer(window, &ui);
 #pragma endregion
 
 #pragma region renderer
 	renderer.init();
+	renderer.createFramebuffer(width, height);
 
 	std::filesystem::path path = std::filesystem::path(MODEL_DIR) / std::filesystem::path("LibertyStatue/LibertStatue.obj");
 	std::shared_ptr<Model> backpackModel = std::make_shared<Model>(path.string());
@@ -216,7 +217,7 @@ int main() {
 
 		scene.submit(renderer);
 		
-		if (lookAround) {
+		if (cameraMode) {
 			camera.move(deltaTime);
 		}
 
