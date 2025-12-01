@@ -1,5 +1,5 @@
-#include "renderer.h"
 #include <glad/glad.h>
+#include "renderer.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
