@@ -1,6 +1,8 @@
 A personal OpenGL renderer built for learning and experimenting with modern graphics techniques, rendering algorithms, and engine architecture concepts.
 
-<img width="1274" height="719" alt="image" src="https://github.com/user-attachments/assets/e2ad7a1b-8af5-4b71-8ac6-b1c51f4e4a02" />
+<img width="1272" height="712" alt="image" src="https://github.com/user-attachments/assets/e75e23b9-42ca-4c3a-9869-409fdcbc1870" />
+
+
 
 
 
