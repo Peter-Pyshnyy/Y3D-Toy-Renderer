@@ -13,7 +13,8 @@ Camera::Camera() :
 	fov(45.0f),
 	SENSITIVITY(0.00075f),
 	MOVEMENT_SPEED(3.0f),
-	ACCELERATION_SPEED(3.0f)
+	ACCELERATION_SPEED(3.0f),
+	ASPECT_RATIO(16.0f / 9.0f)
 
 {
 }
@@ -39,6 +40,10 @@ void Camera::mouseUpdate(glm::vec2 newMousePos) {
 
 glm::mat4 Camera::getWorldToViewMatrix() const {
 	return glm::lookAt(position, position + viewDirection, cameraUp);
+}
+
+glm::mat4 Camera::getProjectionMatrix() const {
+	return glm::perspective(glm::radians(fov), ASPECT_RATIO, 0.1f, 100.0f);
 }
 
 void Camera::move(float delta) {

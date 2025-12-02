@@ -9,7 +9,6 @@
 
 constexpr int MAX_POINTLIGHTS = 16;
 constexpr int MAX_SPOTLIGHTS = 16;
-constexpr float ASPECT_RATIO = 16.0 / 9.0;
 
 Renderer::~Renderer() {
     for (auto& [type, shader] : shaders) {
@@ -60,8 +59,6 @@ void Renderer::createFramebuffer(int w, int h) {
     }
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	/*fbWidth = w;
-	fbHeight = h;*/
 }
 
 void Renderer::setupShaders() {
@@ -106,7 +103,7 @@ void Renderer::updateShaderLights(Shader& shader) {
 
 // assumes shader is already bound
 void Renderer::setUniforms(Shader& shader, const FrameData& frame, const glm::mat4& model, const glm::mat4& normal) {
-    shader.setMat4("u_proj", frame.projection);
+    shader.setMat4("u_proj", frame.camera.getProjectionMatrix());
     shader.setMat4("u_view", frame.camera.getWorldToViewMatrix());
     shader.setMat4("u_model", model);
 	shader.setMat4("u_normalMatrix", normal);
@@ -179,7 +176,6 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     FrameData frame{
-        glm::perspective(glm::radians(camera.getFov()), ASPECT_RATIO, 0.1f, 100.0f),
         camera,
         time,
         deltaTime
@@ -189,8 +185,4 @@ void Renderer::renderFrame(const Camera& camera, float time, float deltaTime) {
 	drawList.clear();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-float Renderer::getFbAspectRatio() {
-    return static_cast<float>(fbWidth) / fbHeight;
 }

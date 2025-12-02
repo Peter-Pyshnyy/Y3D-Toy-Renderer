@@ -14,7 +14,6 @@ enum class ShaderType {
 };
 
 struct FrameData {
-    glm::mat4 projection;
     const Camera& camera;
     float time;
     float deltaTime;
@@ -66,10 +65,7 @@ public:
 	void submit(const PointLight& l); // point light submission
 	void submit(const Spotlight& l); // spotlight submission
 
-    float getFbAspectRatio();
-
     GLuint fbo, colorTex, depthRBO;
-    int fbWidth, fbHeight;
     const float ASPECT_RATIO = 1.9;
 private:
     std::vector<Model> models;

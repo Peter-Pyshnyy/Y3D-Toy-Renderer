@@ -1,7 +1,7 @@
 #include "UI.h"
 
-#include "imgui.h"
 #include <imgui_internal.h>
+#include "ImGuizmo.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include <iostream>
@@ -86,10 +86,10 @@ void UI::createDockSpace() {
 	ImGui::End();
 }
 
-void UI::createViewportWindow(Renderer& renderer) {
+void UI::createViewportWindow(Camera& camera, ImTextureID texture) {
 	ImGui::Begin("Viewport");
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-	float texAspect = renderer.ASPECT_RATIO;
+	float texAspect = camera.ASPECT_RATIO;
 
 	ImVec2 uv0, uv1;
 
@@ -107,7 +107,7 @@ void UI::createViewportWindow(Renderer& renderer) {
 		uv1 = ImVec2(0.5f + offset, 0.0f);
 	}
 
-	ImGui::Image((ImTextureID)renderer.colorTex, viewportSize, uv0, uv1);
+	ImGui::Image(texture, viewportSize, uv0, uv1);
 	ImGui::End();
 }
 
@@ -173,4 +173,22 @@ void UI::createPropertiesWindow() {
 		};
 	}
 	ImGui::End();
+}
+
+void UI::renderGuizmo(Camera& camera) {
+	/*ImGuizmo::BeginFrame();
+	ImVec2 viewportPos = ImGui::GetWindowPos();
+	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+	ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);*/
+
+	//if (selectedNode) {
+	//	glm::mat4 model = selectedNode->getWorldTransform();
+	//	glm::mat4 view = camera.getWorldToViewMatrix();
+	//	glm::mat4 proj = camera.;
+	//	// Convert to float pointer (ImGuizmo uses row-major float arrays)
+	//	float viewArr[16], projArr[16], modelArr[16];
+	//	memcpy(viewArr, glm::value_ptr(view), sizeof(viewArr));
+	//	memcpy(projArr, glm::value_ptr(proj), sizeof(projArr));
+	//	memcpy(modelArr, glm::value_ptr(model), sizeof(modelArr));
+	//}
 }
