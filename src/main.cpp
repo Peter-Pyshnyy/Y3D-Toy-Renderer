@@ -23,8 +23,8 @@
 
 GLuint width = 1280;
 GLuint height = 720;
-GLuint numIndices = 0;
-Camera camera;
+const GLfloat helper = 1.031375 * 0.75; // there is surely a better way to do it, but this roughly derives viewport aspect ratio from window aspect ratio
+Camera camera((static_cast<float>(width) / height) * helper);
 Renderer renderer;
 Scene scene;
 
