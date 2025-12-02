@@ -52,12 +52,11 @@ struct DrawList {
 class Renderer {
 public:
     // TODO: add rule of 5
-    Renderer(int width, int height);
+    Renderer() = default;
     ~Renderer();
-	// зробити: фбвідс і гайт зараз 0 і все ламається. Замінити дефолтні відс і хайт на фбвідс і фбхайт
     void init();
     void renderFrame(const Camera& camera, float time, float deltaTime);
-    void createFramebuffer(int width, int height);
+    void createFramebuffer(int width = 1920, int height = 1080);
 
     void addModel(const std::string& name);
     void addPrimitive(Primitive&& primitive);
@@ -67,8 +66,11 @@ public:
 	void submit(const PointLight& l); // point light submission
 	void submit(const Spotlight& l); // spotlight submission
 
+    float getFbAspectRatio();
+
     GLuint fbo, colorTex, depthRBO;
-    int width, height;
+    int fbWidth, fbHeight;
+    const float ASPECT_RATIO = 1.9;
 private:
     std::vector<Model> models;
     std::vector<Primitive> primitives;

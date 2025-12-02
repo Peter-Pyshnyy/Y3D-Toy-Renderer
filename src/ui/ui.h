@@ -5,6 +5,7 @@
 
 class UI {
 public:
+    UI() {}
     UI(GLFWwindow* window);
     ~UI();
 

@@ -4,7 +4,9 @@
 #include <imgui_internal.h>
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-//#include "../core/renderer.h"
+#include <iostream>
+
+float uvOffset = 0.5;
 
 UI::UI(GLFWwindow* window) : window(window)
 {
@@ -85,14 +87,25 @@ void UI::createDockSpace() {
 void UI::createViewportWindow(Renderer& renderer) {
 	ImGui::Begin("Viewport");
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+	float texAspect = renderer.ASPECT_RATIO;
 
-	// if size changed, update framebuffer size
-	if ((int)viewportSize.x != renderer.width || (int)viewportSize.y != renderer.height) {
-		renderer.createFramebuffer((int)viewportSize.x, (int)viewportSize.y);
+	ImVec2 uv0, uv1;
+
+	float viewAspect = viewportSize.x / viewportSize.y;
+	if (viewAspect > texAspect) {
+		// viewport wider -> crop horizontally
+		float offset = (texAspect / viewAspect) / 2.0;
+		uv0 = ImVec2(0, 0.5 + offset);
+		uv1 = ImVec2(1, 0.5 - offset);
+	}
+	else {
+		// viewport taller -> crop vertically
+		float offset = (viewAspect / texAspect) / 2.0;
+		uv0 = ImVec2(0.5 - offset, 1.0f);
+		uv1 = ImVec2(0.5f + offset, 0.0f);
 	}
 
-	// draw the texture (note the UVs {0,1} to {1,0} flips vertically)
-	ImGui::Image((ImTextureID)renderer.colorTex, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((ImTextureID)renderer.colorTex, viewportSize, uv0, uv1);
 	ImGui::End();
 }
 
@@ -104,11 +117,8 @@ void UI::createHierarchyWindow(SceneNode& root) {
 		for (auto &child : root.children) {
 			recursiveHierarchy(*child);
 		}
-
 		ImGui::TreePop();
 	}
-
-
 	ImGui::End();
 }
 
