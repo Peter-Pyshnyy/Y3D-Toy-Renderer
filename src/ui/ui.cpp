@@ -91,29 +91,31 @@ void UI::createDockSpace() {
 void UI::createViewportWindow(Camera& camera, ImTextureID texture) {
 	ImGui::Begin("Viewport");
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-	float texAspect = camera.ASPECT_RATIO;
 
-	ImVec2 uv0, uv1;
+	float imageAspect = camera.ASPECT_RATIO;
+	float viewportAspect = viewportSize.x / viewportSize.y;
 
-	float viewAspect = viewportSize.x / viewportSize.y;
-	if (viewAspect > texAspect) {
-		// viewport wider -> crop horizontally
-		float offset = (texAspect / viewAspect) / 2.0;
-		uv0 = ImVec2(0, 0.5 + offset);
-		uv1 = ImVec2(1, 0.5 - offset);
+	ImVec2 finalSize;
+	if (viewportAspect > imageAspect) {
+		finalSize.y = viewportSize.y;
+		finalSize.x = finalSize.y * imageAspect;
 	}
 	else {
-		// viewport taller -> crop vertically
-		float offset = (viewAspect / texAspect) / 2.0;
-		uv0 = ImVec2(0.5 - offset, 1.0f);
-		uv1 = ImVec2(0.5f + offset, 0.0f);
+		finalSize.x = viewportSize.x;
+		finalSize.y = finalSize.x / imageAspect;
 	}
 
-	//ImGui::Image(texture, viewportSize, uv0, uv1); // remove for gizmo testing
-	ImGui::Image(texture, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	// center the image in the viewport
+	ImVec2 cursorPos = ImGui::GetCursorPos();
+	cursorPos.x += (viewportSize.x - finalSize.x) * 0.5f;
+	cursorPos.y += (viewportSize.y - finalSize.y) * 0.5f;
+	ImGui::SetCursorPos(cursorPos);
 
+	ImGui::Image(texture, finalSize, ImVec2(0, 1), ImVec2(1, 0));
 
-	renderGizmo(camera);
+	// render gizmo on top of viewport, adjusting for cropping
+	renderGizmo(camera, viewportSize, finalSize);
+
 
 	ImGui::End();
 }
@@ -182,15 +184,24 @@ void UI::createPropertiesWindow() {
 	ImGui::End();
 }
 
-void UI::renderGizmo(Camera& camera) {
-	ImVec2 winPos = ImGui::GetWindowPos();
+void UI::renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize) {
+
+	// --------- adjusting gizmo to viewport cropping ---------
+	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-	ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+	ImVec2 contentPos(windowPos.x + contentMin.x, windowPos.y + contentMin.y);
+	ImVec2 imageOffset = ImVec2(
+		(viewportSize.x - finalSize.x) * 0.5f,
+		(viewportSize.y - finalSize.y) * 0.5f
+	);
 
-	ImVec2 pos(winPos.x + contentMin.x, winPos.y + contentMin.y);
-	ImVec2 size(contentMax.x - contentMin.x, contentMax.y - contentMin.y);
+	ImVec2 imageTopLeft = ImVec2(
+		contentPos.x + imageOffset.x,
+		contentPos.y + imageOffset.y
+	);
+	ImGuizmo::SetRect(imageTopLeft.x, imageTopLeft.y, finalSize.x, finalSize.y);
+	// ---------------------------------------------------------
 
-	ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 

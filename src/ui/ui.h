@@ -17,7 +17,7 @@ public:
     void createViewportWindow(Camera& camera, ImTextureID texture);
 	void createHierarchyWindow(SceneNode& scene);
 	void createPropertiesWindow();
-    void renderGizmo(Camera& camera);
+    void renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize);
 
 	SceneNode* selectedNode = nullptr;
 private:
