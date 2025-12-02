@@ -74,10 +74,12 @@ void UI::createDockSpace() {
 		ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
 
 		ImGuiID left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
-		ImGuiID right = dockspace_id;
+		ImGuiID center = dockspace_id;
+		ImGuiID leftBot = ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.40f, nullptr, &left);
 
 		ImGui::DockBuilderDockWindow("Hierarchy", left);
-		ImGui::DockBuilderDockWindow("Viewport", right);
+		ImGui::DockBuilderDockWindow("Viewport", center);
+		ImGui::DockBuilderDockWindow("Properties", leftBot);
 
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
@@ -148,4 +150,27 @@ void UI::recursiveHierarchy(SceneNode& node) {
 		}
 		ImGui::TreePop();
 	}
+}
+
+void UI::createPropertiesWindow() {
+	ImGui::Begin("Properties");
+	if (selectedNode) {
+		glm::vec3 pos = selectedNode->transform.position;
+		glm::vec3 rot = selectedNode->transform.rotation;
+		float scl = selectedNode->transform.scale;
+
+		ImGui::Text("Name: %s", selectedNode->name.c_str());
+		ImGui::Separator();
+		ImGui::Text("Transform:");
+		if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
+			selectedNode->translate(pos - selectedNode->transform.position);
+		}
+		if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
+			selectedNode->rotate(rot - selectedNode->transform.rotation);
+		}
+		if (ImGui::DragFloat("Scale", &scl, 0.1f, 0.01f, 100.0f)) {
+			selectedNode->scale(scl / selectedNode->transform.scale);
+		};
+	}
+	ImGui::End();
 }

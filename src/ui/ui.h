@@ -5,7 +5,6 @@
 
 class UI {
 public:
-    UI() {}
     UI(GLFWwindow* window);
     ~UI();
 
@@ -14,6 +13,7 @@ public:
     void createDockSpace();
     void createViewportWindow(Renderer& renderer);
 	void createHierarchyWindow(SceneNode& scene);
+	void createPropertiesWindow();
 
 	SceneNode* selectedNode = nullptr;
 private:

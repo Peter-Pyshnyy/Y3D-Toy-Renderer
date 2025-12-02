@@ -228,6 +228,7 @@ int main() {
 		ui.createDockSpace();
 		ui.createHierarchyWindow(*scene.getRoot());
 		ui.createViewportWindow(renderer);
+		ui.createPropertiesWindow();
 		ui.end();
 
 		glfwSwapBuffers(window); //presents the contents of an internal buffer to the screen
