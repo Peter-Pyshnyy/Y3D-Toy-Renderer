@@ -1,9 +1,10 @@
 #include "UI.h"
 
-#include "imgui.h"
 #include <imgui_internal.h>
+#include "imgui_guizmo.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 float uvOffset = 0.5;
@@ -32,6 +33,7 @@ void UI::begin()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 
     // create a docking space over the entire viewport
     ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(),
@@ -74,20 +76,22 @@ void UI::createDockSpace() {
 		ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
 
 		ImGuiID left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
-		ImGuiID right = dockspace_id;
+		ImGuiID center = dockspace_id;
+		ImGuiID leftBot = ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.40f, nullptr, &left);
 
 		ImGui::DockBuilderDockWindow("Hierarchy", left);
-		ImGui::DockBuilderDockWindow("Viewport", right);
+		ImGui::DockBuilderDockWindow("Viewport", center);
+		ImGui::DockBuilderDockWindow("Properties", leftBot);
 
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
 	ImGui::End();
 }
 
-void UI::createViewportWindow(Renderer& renderer) {
+void UI::createViewportWindow(Camera& camera, ImTextureID texture) {
 	ImGui::Begin("Viewport");
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-	float texAspect = renderer.ASPECT_RATIO;
+	float texAspect = camera.ASPECT_RATIO;
 
 	ImVec2 uv0, uv1;
 
@@ -105,7 +109,12 @@ void UI::createViewportWindow(Renderer& renderer) {
 		uv1 = ImVec2(0.5f + offset, 0.0f);
 	}
 
-	ImGui::Image((ImTextureID)renderer.colorTex, viewportSize, uv0, uv1);
+	//ImGui::Image(texture, viewportSize, uv0, uv1); // remove for gizmo testing
+	ImGui::Image(texture, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+
+
+	renderGizmo(camera);
+
 	ImGui::End();
 }
 
@@ -147,5 +156,84 @@ void UI::recursiveHierarchy(SceneNode& node) {
 			recursiveHierarchy(*child);
 		}
 		ImGui::TreePop();
+	}
+}
+
+void UI::createPropertiesWindow() {
+	ImGui::Begin("Properties");
+	if (selectedNode) {
+		glm::vec3 pos = selectedNode->transform.position;
+		glm::vec3 rot = selectedNode->transform.rotation;
+		float scl = selectedNode->transform.scale;
+
+		ImGui::Text("Name: %s", selectedNode->name.c_str());
+		ImGui::Separator();
+		ImGui::Text("Transform:");
+		if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
+			selectedNode->translate(pos - selectedNode->transform.position);
+		}
+		if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
+			selectedNode->rotate(rot - selectedNode->transform.rotation);
+		}
+		if (ImGui::DragFloat("Scale", &scl, 0.1f, 0.01f, 100.0f)) {
+			selectedNode->scale(scl / selectedNode->transform.scale);
+		};
+	}
+	ImGui::End();
+}
+
+void UI::renderGizmo(Camera& camera) {
+	ImVec2 winPos = ImGui::GetWindowPos();
+	ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+	ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+
+	ImVec2 pos(winPos.x + contentMin.x, winPos.y + contentMin.y);
+	ImVec2 size(contentMax.x - contentMin.x, contentMax.y - contentMin.y);
+
+	ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::SetDrawlist();
+
+
+
+	if (selectedNode) {
+		ImGuizmo::Enable(true);
+		glm::mat4 model = selectedNode->getWorldTransform();
+		glm::mat4 view = camera.getWorldToViewMatrix();
+		glm::mat4 proj = camera.getProjectionMatrix();
+
+		// Convert to float pointer (ImGuizmo uses row-major float arrays)
+		float viewArr[16], projArr[16], modelArr[16];
+		memcpy(viewArr, glm::value_ptr(view), sizeof(viewArr));
+		memcpy(projArr, glm::value_ptr(proj), sizeof(projArr));
+		memcpy(modelArr, glm::value_ptr(model), sizeof(modelArr));
+
+		static ImGuizmo::OPERATION currentOp = ImGuizmo::TRANSLATE;
+		static ImGuizmo::MODE currentMode = ImGuizmo::WORLD;
+
+		ImGuizmo::Manipulate(viewArr, projArr,
+			currentOp, currentMode,
+			modelArr, nullptr, nullptr);
+
+		//std::cout << ImGuizmo::IsViewManipulateHovered() << "\n";
+
+		if (ImGuizmo::IsUsing()) {
+			glm::vec3 pos, rot, scl;
+
+			ImGuizmo::DecomposeMatrixToComponents(modelArr,
+				glm::value_ptr(pos),
+				glm::value_ptr(rot),
+				glm::value_ptr(scl));
+
+			if (pos != selectedNode->transform.position) {
+				selectedNode->translate(pos - selectedNode->transform.position);
+			}
+			if (rot != selectedNode->transform.rotation) {
+				selectedNode->rotate(rot - selectedNode->transform.rotation);
+			}
+			if (scl.x != selectedNode->transform.scale) {
+				selectedNode->scale(scl.x / selectedNode->transform.scale);
+			}
+		}
 	}
 }

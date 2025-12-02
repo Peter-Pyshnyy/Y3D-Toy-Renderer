@@ -23,8 +23,10 @@ public:
 	void setAcceleration(bool state);
 	void zoom(float yoffset);
 	glm::mat4 getWorldToViewMatrix() const;
+	glm::mat4 getProjectionMatrix() const;
 	glm::vec3 getPosition() const;
 	float getFov() const;
+	const float ASPECT_RATIO;
 	enum Direction { FORWARD, BACKWARD, RIGHT, LEFT, UP, DOWN };
 };
 

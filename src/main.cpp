@@ -227,7 +227,8 @@ int main() {
 		ui.begin();
 		ui.createDockSpace();
 		ui.createHierarchyWindow(*scene.getRoot());
-		ui.createViewportWindow(renderer);
+		ui.createViewportWindow(camera, renderer.colorTex);
+		ui.createPropertiesWindow();
 		ui.end();
 
 		glfwSwapBuffers(window); //presents the contents of an internal buffer to the screen
