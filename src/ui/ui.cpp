@@ -205,8 +205,6 @@ void UI::renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize) {
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 
-
-
 	if (selectedNode) {
 		ImGuizmo::Enable(true);
 		glm::mat4 model = selectedNode->getWorldTransform();
@@ -219,8 +217,19 @@ void UI::renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize) {
 		memcpy(projArr, glm::value_ptr(proj), sizeof(projArr));
 		memcpy(modelArr, glm::value_ptr(model), sizeof(modelArr));
 
-		static ImGuizmo::OPERATION currentOp = ImGuizmo::TRANSLATE;
+		// --------- styles and operations ---------
+		ImGuizmo::OPERATION currentOp = ImGuizmo::OPERATION(gizmoOperation);
 		static ImGuizmo::MODE currentMode = ImGuizmo::WORLD;
+		ImGuizmo::AllowAxisFlip(false);
+		ImGuizmo::SetGizmoSizeClipSpace(0.15f);
+
+		auto& style = ImGuizmo::GetStyle();
+		style.TranslationLineThickness = 7.0f;
+		style.TranslationLineArrowSize = 10.0f;
+		style.RotationLineThickness = 4.0f;
+		style.ScaleLineThickness = 7.0;
+		style.ScaleLineCircleSize = 10.0f;
+		// -----------------------------------------
 
 		ImGuizmo::Manipulate(viewArr, projArr,
 			currentOp, currentMode,
@@ -235,7 +244,7 @@ void UI::renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize) {
 				glm::value_ptr(pos),
 				glm::value_ptr(rot),
 				glm::value_ptr(scl));
-
+			
 			if (pos != selectedNode->transform.position) {
 				selectedNode->translate(pos - selectedNode->transform.position);
 			}

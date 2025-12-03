@@ -20,6 +20,7 @@ public:
     void renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize);
 
 	SceneNode* selectedNode = nullptr;
+	unsigned int gizmoOperation = 7; // translate(7), rotate(56), scaleX(128)
 private:
     void recursiveHierarchy(SceneNode& node);
     GLFWwindow* window;
