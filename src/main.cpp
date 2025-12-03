@@ -23,7 +23,7 @@
 
 GLuint width = 1280;
 GLuint height = 720;
-const GLfloat helper = 1.031375 * 0.75; // there is surely a better way to do it, but this roughly derives viewport aspect ratio from window aspect ratio
+const GLfloat helper = 1.031375 * 0.75; // there is surely a better way to do it, but this roughly derives viewport aspect ratio from window aspect ratio (given VP is 0.75 of dockspace);   
 Camera camera((static_cast<float>(width) / height) * helper);
 Renderer renderer;
 Scene scene;
