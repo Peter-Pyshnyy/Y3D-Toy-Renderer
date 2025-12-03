@@ -23,8 +23,8 @@
 
 GLuint width = 1280;
 GLuint height = 720;
-GLuint numIndices = 0;
-Camera camera;
+const GLfloat helper = 1.031375 * 0.75; // there is surely a better way to do it, but this roughly derives viewport aspect ratio from window aspect ratio
+Camera camera((static_cast<float>(width) / height) * helper);
 Renderer renderer;
 Scene scene;
 
@@ -71,10 +71,27 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			camera.setMoving(camera.RIGHT, true);
 		}
 		if (key == GLFW_KEY_Q) {
-			camera.setMoving(camera.DOWN, true);
+			if (cameraMode) {
+				camera.setMoving(camera.DOWN, true);
+			}
+			else {
+				UI* ui = static_cast<UI*>(glfwGetWindowUserPointer(window));
+				ui->gizmoOperation = 7; // translate
+			}
 		}
 		if (key == GLFW_KEY_E) {
-			camera.setMoving(camera.UP, true);
+			if (cameraMode) {
+				camera.setMoving(camera.UP, true);
+			}
+			else {
+				UI* ui = static_cast<UI*>(glfwGetWindowUserPointer(window));
+				ui->gizmoOperation = 56; // rotate
+			}
+		}
+		if (key == GLFW_KEY_R) {
+			if (cameraMode) return;
+			UI* ui = static_cast<UI*>(glfwGetWindowUserPointer(window));
+			ui->gizmoOperation = 128; // scaleX
 		}
 		if (key == GLFW_KEY_LEFT_SHIFT) {
 			camera.setAcceleration(true);
@@ -130,7 +147,7 @@ int main() {
 	glfwSetScrollCallback(window, mouse_scroll_callback);
 
 	UI ui(window);
-	glfwSetWindowUserPointer(window, &ui);
+	glfwSetWindowUserPointer(window, &ui); // lets us access the ui object using static_cast<UI*>(glfwGetWindowUserPointer(window));
 #pragma endregion
 
 #pragma region renderer

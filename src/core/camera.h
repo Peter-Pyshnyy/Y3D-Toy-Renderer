@@ -16,7 +16,7 @@ class Camera
 	const float MOVEMENT_SPEED;
 	const float ACCELERATION_SPEED;
 public:
-	Camera();
+	Camera(float aspectRatio);
 	void mouseUpdate(glm::vec2 newMousePos);
 	void move(float delta);
 	void setMoving(uint8_t dir, bool state);

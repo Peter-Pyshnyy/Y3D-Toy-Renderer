@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-Camera::Camera() :
+Camera::Camera(float aspectRation) :
 	position(0.0f, 0.0f, 7.5f),
 	oldMousePosition(0.0f),
 	viewDirection(0.0f, 0.0f, -1.0f),
@@ -14,7 +14,7 @@ Camera::Camera() :
 	SENSITIVITY(0.00075f),
 	MOVEMENT_SPEED(3.0f),
 	ACCELERATION_SPEED(3.0f),
-	ASPECT_RATIO(16.0f / 9.0f)
+	ASPECT_RATIO(aspectRation)
 
 {
 }
