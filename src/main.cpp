@@ -230,7 +230,7 @@ int main() {
 		float currentFrame = glfwGetTime();
 		float deltaTime = currentFrame - lastFrame;
 
-		scene.getRoot()->getChild(3)->rotate(glm::vec3(20.0f * deltaTime, -30.0f * deltaTime, 0.0f));
+		//scene.getRoot()->getChild(3)->rotate(glm::vec3(20.0f * deltaTime, -30.0f * deltaTime, 0.0f));
 
 		scene.submit(renderer);
 		

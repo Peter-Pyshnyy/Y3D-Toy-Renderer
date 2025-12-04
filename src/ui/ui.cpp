@@ -238,22 +238,13 @@ void UI::renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize) {
 		//std::cout << ImGuizmo::IsViewManipulateHovered() << "\n";
 
 		if (ImGuizmo::IsUsing()) {
-			glm::vec3 pos, rot, scl;
-
-			ImGuizmo::DecomposeMatrixToComponents(modelArr,
-				glm::value_ptr(pos),
-				glm::value_ptr(rot),
-				glm::value_ptr(scl));
-			
-			if (pos != selectedNode->transform.position) {
-				selectedNode->translate(pos - selectedNode->transform.position);
-			}
-			if (rot != selectedNode->transform.rotation) {
-				selectedNode->rotate(rot - selectedNode->transform.rotation);
-			}
-			if (scl.x != selectedNode->transform.scale) {
-				selectedNode->scale(scl.x / selectedNode->transform.scale);
-			}
+			// get new local tranform
+			glm::mat4 worldNew = glm::make_mat4(modelArr);
+			glm::mat4 modelNew = glm::inverse(selectedNode->getParent()->getWorldTransform()) * worldNew;
+			// ensure uniform scaling (THERE'S AN ERROR HERE)
+			float scl = glm::length(modelNew[0]) / selectedNode->transform.scale;
+			modelNew = glm::scale(modelNew, glm::vec3(1.0, scl, scl)); // probably here
+			selectedNode->setModelMatrix(modelNew);
 		}
 	}
 }
