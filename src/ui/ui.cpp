@@ -175,9 +175,6 @@ void UI::createPropertiesWindow() {
 			selectedNode->translate(pos - selectedNode->transform.position);
 		}
 		if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
-			std::cout << rot.x - selectedNode->transform.rotation.x << ", "
-				<< rot.y - selectedNode->transform.rotation.y << ", "
-				<< rot.z - selectedNode->transform.rotation.z << "\n";
 			selectedNode->rotate(rot - selectedNode->transform.rotation);
 		}
 		if (ImGui::DragFloat("Scale", &scl, 0.1f, 0.01f, 100.0f)) {

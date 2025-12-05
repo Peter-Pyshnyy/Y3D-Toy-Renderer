@@ -102,7 +102,7 @@ void SceneNode::updateTransformComponents() {
 	transform.position = glm::vec3(modelMatrix[3]);
 	transform.scale = glm::length(glm::vec3(modelMatrix[0])); // assuming uniform scaling
 	glm::vec3 euler; 
-    glm::extractEulerAngleXYZ(modelMatrix, euler.x, euler.y, euler.z);
+	glm::extractEulerAngleZYX(modelMatrix, euler.z, euler.y, euler.x); // ZYX order, as in updateLocalTransform
 	transform.rotation = glm::degrees(euler);
 }
 
