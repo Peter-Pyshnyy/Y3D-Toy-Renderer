@@ -37,6 +37,7 @@ public:
 	void translate(const glm::vec3& delta);
 	void rotate(const glm::vec3& euler);
 	void scale(float factor);
+	void updateTransformComponents();
 	glm::mat4 getLocalTransform() const;
 	glm::mat4 getWorldTransform() const;
 	virtual void updateWorldTransform(const glm::mat4& parentsWorld);

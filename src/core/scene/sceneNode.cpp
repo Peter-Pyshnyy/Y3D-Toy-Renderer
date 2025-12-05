@@ -1,6 +1,9 @@
+#define GLM_ENABLE_EXPERIMENTAL // for glm::gtx/euler_angles
+
 #include "sceneNode.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include "../renderer.h"
 
 SceneNode::SceneNode(const std::string& name)
@@ -49,6 +52,7 @@ SceneNode* SceneNode::getParent() const {
 
 void SceneNode::setModelMatrix(const glm::mat4& matrix) {
     modelMatrix = matrix;
+	updateTransformComponents();
 	propagateDirty();
 }
 
@@ -92,6 +96,14 @@ void SceneNode::updateLocalTransform() {
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(transform.scale));
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 	propagateDirty();
+}
+
+void SceneNode::updateTransformComponents() {
+	transform.position = glm::vec3(modelMatrix[3]);
+	transform.scale = glm::length(glm::vec3(modelMatrix[0])); // assuming uniform scaling
+	glm::vec3 euler; 
+	glm::extractEulerAngleZYX(modelMatrix, euler.z, euler.y, euler.x); // ZYX order, as in updateLocalTransform
+	transform.rotation = glm::degrees(euler);
 }
 
 // propagate world transform update to children

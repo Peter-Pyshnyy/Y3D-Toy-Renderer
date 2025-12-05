@@ -167,7 +167,7 @@ void UI::createPropertiesWindow() {
 		glm::vec3 pos = selectedNode->transform.position;
 		glm::vec3 rot = selectedNode->transform.rotation;
 		float scl = selectedNode->transform.scale;
-
+	
 		ImGui::Text("Name: %s", selectedNode->name.c_str());
 		ImGui::Separator();
 		ImGui::Text("Transform:");
@@ -233,27 +233,32 @@ void UI::renderGizmo(Camera& camera, ImVec2 viewportSize, ImVec2 finalSize) {
 
 		ImGuizmo::Manipulate(viewArr, projArr,
 			currentOp, currentMode,
-			modelArr, nullptr, nullptr);
-
-		//std::cout << ImGuizmo::IsViewManipulateHovered() << "\n";
+			modelArr, nullptr, nullptr); 
 
 		if (ImGuizmo::IsUsing()) {
-			glm::vec3 pos, rot, scl;
+			// get new local tranform
+			glm::mat4 worldNew = glm::make_mat4(modelArr);
+			glm::mat4 modelNew = glm::inverse(selectedNode->getParent()->getWorldTransform()) * worldNew;
+			// uniform scaling
+			glm::vec3 col0 = glm::vec3(modelNew[0]);
+			glm::vec3 col1 = glm::vec3(modelNew[1]);
+			glm::vec3 col2 = glm::vec3(modelNew[2]);
 
-			ImGuizmo::DecomposeMatrixToComponents(modelArr,
-				glm::value_ptr(pos),
-				glm::value_ptr(rot),
-				glm::value_ptr(scl));
-			
-			if (pos != selectedNode->transform.position) {
-				selectedNode->translate(pos - selectedNode->transform.position);
+			float newSx = glm::length(col0);
+
+			// guard against degenerate case
+			if (newSx > 0.0f) {
+				glm::vec3 col0Norm = glm::normalize(col0);
+				glm::vec3 col1Norm = glm::normalize(col1);
+				glm::vec3 col2Norm = glm::normalize(col2);
+
+				// glm::scale() would corrupt rotation and translation
+				modelNew[0] = glm::vec4(col0Norm * newSx, 0.0f);
+				modelNew[1] = glm::vec4(col1Norm * newSx, 0.0f);
+				modelNew[2] = glm::vec4(col2Norm * newSx, 0.0f);
 			}
-			if (rot != selectedNode->transform.rotation) {
-				selectedNode->rotate(rot - selectedNode->transform.rotation);
-			}
-			if (scl.x != selectedNode->transform.scale) {
-				selectedNode->scale(scl.x / selectedNode->transform.scale);
-			}
+
+			selectedNode->setModelMatrix(modelNew);
 		}
 	}
 }
