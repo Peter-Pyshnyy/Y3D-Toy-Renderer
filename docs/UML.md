@@ -1,6 +1,6 @@
 # UML Diagram
 
-This UML class diagram captures the key runtime architecture of the renderer (scene graph, render pipeline, geometry, camera, and UI).
+\created with codex\
 
 ```mermaid
 classDiagram
