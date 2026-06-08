@@ -19,7 +19,6 @@ A personal OpenGL renderer built for learning and experimenting with modern grap
 **Features**
 
 
-- UML diagram: [`docs/UML.md`](docs/UML.md)
 - Modular architecture
 - Multi-shader pipeline
 - Model loading
